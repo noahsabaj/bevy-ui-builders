@@ -1,0 +1,75 @@
+[package]
+name = "bevy-ui-builders"
+version = "0.1.0"
+edition = "2021"
+authors = ["Noah Sabaj <noahsabaj@gmail.com>"]
+description = "Declarative UI builders for Bevy - eliminate boilerplate, build consistent UIs"
+documentation = "https://docs.rs/bevy-ui-builders"
+repository = "https://github.com/noahsabaj/bevy-ui-builders"
+license = "MIT OR Apache-2.0"
+keywords = ["bevy", "ui", "builder", "gamedev", "gui"]
+categories = ["game-development", "gui"]
+readme = "README.md"
+
+[dependencies]
+bevy = { version = "0.16", default-features = false, features = [
+    "bevy_ui",
+    "bevy_text",
+    "bevy_sprite",
+    "bevy_color",
+    "default_font"
+] }
+bevy_simple_text_input = "0.11"
+
+[dev-dependencies]
+bevy = "0.16"
+
+[features]
+default = ["all_builders"]
+all_builders = ["button", "slider", "dialog", "text_input", "panel", "form", "progress", "label", "separator"]
+button = []
+slider = []
+dialog = []
+text_input = []
+panel = []
+form = []
+progress = []
+label = []
+separator = []
+cleanup = []
+
+[[example]]
+name = "button_showcase"
+required-features = ["button"]
+
+[[example]]
+name = "dialog_examples"
+required-features = ["dialog"]
+
+[[example]]
+name = "slider_demo"
+required-features = ["slider"]
+
+[[example]]
+name = "text_input_demo"
+required-features = ["text_input"]
+
+[[example]]
+name = "form_complete"
+required-features = ["form"]
+
+[[example]]
+name = "progress_bars"
+required-features = ["progress"]
+
+[[example]]
+name = "panel_layouts"
+required-features = ["panel"]
+
+[[example]]
+name = "labels_and_separators"
+required-features = ["label", "separator"]
+
+[[example]]
+name = "kitchen_sink"
+required-features = ["all_builders"]
