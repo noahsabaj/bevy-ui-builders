@@ -7,11 +7,11 @@ Thank you for your interest in contributing to bevy-ui-builders! This document p
 1. Fork the repository
 2. Clone your fork:
 ```bash
-`git clone https://github.com/yourusername/bevy-ui-builders.git`
+git clone https://github.com/yourusername/bevy-ui-builders.git
 ```
 4. Create a new branch:
 ```bash
-`git checkout -b feature/your-feature-name`
+git checkout -b feature/your-feature-name
 ```
 
 ## Development Setup
