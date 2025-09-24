@@ -247,7 +247,7 @@ separator_vertical()
     .build(parent);
 ```
 
-## The Cleanup Revolution
+## Cleanup
 
 Never write cleanup boilerplate again:
 
