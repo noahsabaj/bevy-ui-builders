@@ -1,6 +1,5 @@
 //! Text input module - Gateway only
 
-// Private submodules - no implementation here!
 mod builder;
 mod plugin;
 mod systems;
