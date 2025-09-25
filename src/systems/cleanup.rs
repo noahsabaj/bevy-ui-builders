@@ -10,14 +10,21 @@ use bevy::prelude::*;
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,no_run
 /// use bevy::prelude::*;
 /// use bevy_ui_builders::despawn_entities;
 ///
 /// #[derive(Component)]
 /// struct MenuRoot;
 ///
+/// #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
+/// enum GameState {
+///     #[default]
+///     Menu,
+/// }
+///
 /// // In your app setup:
+/// let mut app = App::new();
 /// app.add_systems(OnExit(GameState::Menu), despawn_entities::<MenuRoot>);
 /// ```
 ///
@@ -41,14 +48,21 @@ pub fn despawn_entities<T: Component>(mut commands: Commands, query: Query<Entit
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,no_run
 /// use bevy::prelude::*;
 /// use bevy_ui_builders::despawn_ui_entities;
 ///
 /// #[derive(Component)]
 /// struct SettingsMenuRoot;
 ///
+/// #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
+/// enum GameState {
+///     #[default]
+///     Settings,
+/// }
+///
 /// // More semantic for UI cleanup:
+/// let mut app = App::new();
 /// app.add_systems(OnExit(GameState::Settings), despawn_ui_entities::<SettingsMenuRoot>);
 /// ```
 pub use despawn_entities as despawn_ui_entities;

@@ -387,7 +387,7 @@ Contributions welcome! Please check [CONTRIBUTING.md](CONTRIBUTING.md) for devel
 
 ## Credits
 
-Created by [Noah Sabaj](https://github.com/noahsabaj), the creator of [bevy-plugin-builder](https://github.com/noahsabaj/bevy-plugin-builder), and [bevy-test-suite]
+Created by [Noah Sabaj](https://github.com/noahsabaj), the creator of [bevy-plugin-builder](https://github.com/noahsabaj/bevy-plugin-builder), and [bevy-test-suite](https://github.com/noahsabaj/bevy-test-suite).
 
 ---
 
