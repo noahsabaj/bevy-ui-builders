@@ -48,13 +48,13 @@ ButtonBuilder::new("Click Me")
 
 **That's it!** Hover effects, styling, and interaction handling included.
 
-## Real-World Battle-Tested
+## Production Use
 
-These builders power **[Living Worlds](https://github.com/noahsabaj/livingworlds)**, a Steam game launching December 2025.
+These builders are used in **[Living Worlds](https://github.com/noahsabaj/livingworlds)**, a Steam game.
 
 - **336+ uses** across 72 files
-- **6,300+ lines** of boilerplate eliminated
-- **Zero learning curve** - if you know Rust, you know this
+- Reduces repetitive UI code
+- Familiar Rust builder pattern
 
 ## Quick Start
 
@@ -249,7 +249,7 @@ separator_vertical()
 
 ## Cleanup
 
-Never write cleanup boilerplate again:
+Generic cleanup system:
 
 ```rust
 // Before: 15 lines of cleanup per UI system
@@ -374,7 +374,6 @@ Available features:
 - **Rich text inputs** - Filtering, validation, focus management
 - **Type-safe markers** - Add your own components to any builder
 - **Gateway architecture** - Clean module boundaries
-- **Battle-tested** - Used in production Steam game
 
 ## Bevy Version Support
 

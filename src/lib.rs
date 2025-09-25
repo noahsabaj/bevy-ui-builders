@@ -1,6 +1,6 @@
 //! # Bevy UI Builders
 //!
-//! The UI builders Bevy should have shipped with - battle-tested in production.
+//! Declarative UI builders for Bevy.
 //!
 //! ## Example
 //!
@@ -16,11 +16,13 @@
 
 // Re-export Bevy UI prelude for convenience
 pub use bevy::prelude::*;
+use bevy_plugin_builder::define_plugin;
 
 // Core modules
 mod styles;
 mod systems;
 mod utils;
+pub mod relationships;
 
 // Individual builder imports
 #[cfg(feature = "button")]
@@ -50,6 +52,16 @@ pub mod separator;
 pub use styles::{ButtonStyle, ButtonSize, colors, dimensions};
 pub use systems::cleanup::{despawn_entities, despawn_ui_entities};
 pub use systems::hover::HoverPlugin;
+pub use relationships::{
+    BelongsToDialog, DialogElements,
+    SliderPart, SliderParts,
+    BelongsToForm, FormFields,
+    InButtonGroup, ButtonGroupMembers,
+    PanelContent, PanelContents,
+    TextInputPart, TextInputParts,
+    ProgressBarPart, ProgressBarParts,
+    UIRelationshipsPlugin,
+};
 
 // Builder exports based on features
 #[cfg(feature = "button")]
@@ -117,11 +129,9 @@ pub mod prelude {
     pub use crate::{SeparatorBuilder, Orientation};
 }
 
-/// Main plugin that adds all UI builder systems
-pub struct UiBuilderPlugin;
-
-impl Plugin for UiBuilderPlugin {
-    fn build(&self, app: &mut App) {
+define_plugin!(UiBuilderPlugin {
+    plugins: [HoverPlugin, UIRelationshipsPlugin],
+    custom_init: |app: &mut App| {
         #[cfg(feature = "button")]
         app.add_plugins(button::ButtonPlugin);
 
@@ -136,8 +146,5 @@ impl Plugin for UiBuilderPlugin {
 
         #[cfg(feature = "progress")]
         app.add_plugins(progress::ProgressBarPlugin);
-
-        // Add hover systems
-        app.add_plugins(HoverPlugin);
     }
-}
+});

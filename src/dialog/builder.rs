@@ -3,6 +3,7 @@
 use bevy::prelude::*;
 use crate::button::{ButtonBuilder, ButtonSize};
 use crate::styles::{colors, dimensions, ButtonStyle};
+use crate::relationships::BelongsToDialog;
 use super::types::*;
 
 /// Builder for creating dialogs
@@ -239,7 +240,7 @@ impl DialogBuilder {
             DialogType::Custom => {}
         }
 
-        // Create container
+        // Create container with relationship to overlay
         let container_entity = commands
             .spawn((
                 Node {
@@ -262,6 +263,7 @@ impl DialogBuilder {
                     dialog_type: self.dialog_type,
                 },
                 ZIndex(self.z_index + 50),
+                BelongsToDialog(overlay_entity),  // Relationship to dialog overlay
             ))
             .id();
 
@@ -371,7 +373,8 @@ impl DialogBuilder {
             }
         });
 
-        // Add container as child of overlay
+        // Set up parent-child relationship for visual hierarchy
+        // The BelongsToDialog relationship handles logical grouping and cleanup
         commands.entity(overlay_entity).add_child(container_entity);
 
         overlay_entity

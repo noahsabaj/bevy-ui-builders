@@ -107,7 +107,7 @@ src/my_builder/
 2. Run clippy: `cargo clippy --all-features`
 3. Format code: `cargo fmt`
 4. Update documentation if needed
-5. Add your changes to CHANGELOG.md (if it exists)
+5. Add your changes to CHANGELOG.md
 6. Submit PR with clear description
 
 ### PR Requirements

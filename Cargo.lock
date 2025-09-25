@@ -303,10 +303,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy-ui-builders"
-version = "0.1.0"
+name = "bevy-plugin-builder"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d27177785655dde002ca15b791fc9437192578b2ad065568d72ee33b0a666515"
 dependencies = [
  "bevy",
+]
+
+[[package]]
+name = "bevy-ui-builders"
+version = "0.1.1"
+dependencies = [
+ "bevy",
+ "bevy-plugin-builder",
  "bevy_simple_text_input",
 ]
 

@@ -1,13 +1,11 @@
 //! Generic cleanup utilities
 //!
-//! This module eliminates the need for duplicate cleanup functions across UI modules.
-//! Instead of writing the same despawn logic in every UI system, use these generic functions.
+//! Provides reusable cleanup functions for UI systems.
 
 use bevy::prelude::*;
 
 /// Generic system to despawn all entities with a specific component.
 ///
-/// This function eliminates duplicate cleanup boilerplate across all UI systems.
 /// Use with any component that marks UI root entities for automatic cleanup.
 ///
 /// # Examples
@@ -64,31 +62,18 @@ pub fn despawn_with_children<T: Component>(
     query: Query<Entity, With<T>>,
 ) {
     for entity in &query {
-        // despawn() now automatically handles descendants in Bevy 0.16
+        // despawn() now automatically handles descendants in Bevy 0.16+
         commands.entity(entity).despawn();
     }
 }
 
-/// Cleanup system that can be scheduled to run periodically to remove orphaned UI entities.
-///
-/// This is useful as a safety net to catch any UI entities that might have been
-/// missed by specific cleanup systems.
-pub fn cleanup_orphaned_ui(
-    mut commands: Commands,
-    query: Query<Entity, (With<Node>, Without<ChildOf>)>,
-    camera_query: Query<Entity, With<Camera>>,
-) {
-    // Don't cleanup if we don't have a camera (game might be shutting down)
-    if camera_query.is_empty() {
-        return;
-    }
-
-    // Despawn any UI nodes that don't have a parent (likely orphaned)
-    for entity in &query {
-        // Found orphaned UI entity, cleaning up
-        commands.entity(entity).despawn();
-    }
-}
+// NOTE: Removed cleanup_orphaned_ui function as it was fundamentally flawed.
+// The query `Query<Entity, (With<Node>, Without<ChildOf>)>` would match ALL root UI entities
+// (entities without parents), not orphaned entities. This would delete all top-level UI nodes
+// which would break the entire UI system.
+//
+// Proper orphan detection in Bevy requires tracking which entities should exist
+// vs which entities do exist, which is application-specific logic.
 
 #[cfg(test)]
 mod tests {
