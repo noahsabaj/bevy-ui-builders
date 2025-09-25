@@ -38,7 +38,6 @@ commands.spawn((
 ## After using bevy-ui-builders
 
 ```rust
-// AFTER: With bevy-ui-builders (3 lines!)
 use bevy_ui_builders::*;
 
 ButtonBuilder::new("Click Me")
@@ -47,14 +46,6 @@ ButtonBuilder::new("Click Me")
 ```
 
 **That's it!** Hover effects, styling, and interaction handling included.
-
-## Production Use
-
-These builders are used in **[Living Worlds](https://github.com/noahsabaj/livingworlds)**, a Steam game.
-
-- **336+ uses** across 72 files
-- Reduces repetitive UI code
-- Familiar Rust builder pattern
 
 ## Quick Start
 
@@ -396,11 +387,11 @@ Contributions welcome! Please check [CONTRIBUTING.md](CONTRIBUTING.md) for devel
 
 ## Credits
 
-Created by [Noah Sabaj](https://github.com/noahsabaj), the creator of [bevy-plugin-builder](https://github.com/noahsabaj/bevy-plugin-builder).
+Created by [Noah Sabaj](https://github.com/noahsabaj), the creator of [bevy-plugin-builder](https://github.com/noahsabaj/bevy-plugin-builder), and [bevy-test-suite]
 
 ---
 
-## The Bottom Line
+## Bottom Line
 
 ```rust
 // From 45 lines to 3. That's the power of builders.
@@ -415,7 +406,6 @@ ButtonBuilder::new("Play Game")
 bevy-ui-builders/
 ├── Cargo.toml              # Package manifest
 ├── README.md               # Public documentation
-├── CLAUDE.md               # THIS FILE - AI assistant instructions
 ├── examples/               # Coming soon!
 │   └── (examples will be added in v0.2.0)
 └── src/
