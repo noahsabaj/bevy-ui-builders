@@ -96,7 +96,7 @@ ghost_button("Cancel").build(parent);
 
 ```rust
 // Confirmation dialog
-DialogBuilder::new(DialogType::Confirmation)
+DialogBuilder::new(DialogType::Custom)
     .title("Delete Item?")
     .body("This action cannot be undone.")
     .danger_button("Delete")
@@ -117,7 +117,7 @@ presets::unsaved_changes(commands);
 // Text input with validation
 TextInputBuilder::new()
     .with_placeholder("Enter email...")
-    .with_filter(InputFilter::Email)     // Email validation
+    .with_filter(InputFilter::Alphanumeric)  // Allow letters and numbers
     .with_max_length(100)
     .with_focus_group(FocusGroupId::LoginForm)  // Focus management
     .with_clear_button()                 // X button to clear
@@ -404,83 +404,95 @@ ButtonBuilder::new("Play Game")
 
 ```
 bevy-ui-builders/
+├── .github/                # GitHub Actions workflows
+│   └── workflows/
+│       ├── ci.yml          # CI pipeline (test, clippy, fmt)
+│       └── release.yml     # Automated release to crates.io
+├── examples/               # Usage examples
+│   ├── button_showcase.rs  # Button styles and sizes demo
+│   ├── dialog_examples.rs  # Dialog types and interactions
+│   ├── form_complete.rs    # Form with validation
+│   ├── kitchen_sink.rs     # All builders combined
+│   ├── labels_and_separators.rs # Label styles and dividers
+│   ├── panel_layouts.rs    # Panel configurations
+│   ├── progress_bars.rs    # Progress bar animations
+│   ├── slider_demo.rs      # Slider interactions
+│   └── text_input_demo.rs  # Text input with filters
+├── src/
+│   ├── button/             # ButtonBuilder module
+│   │   ├── mod.rs          # Gateway (exports only)
+│   │   ├── builder.rs      # ButtonBuilder implementation
+│   │   ├── plugin.rs       # ButtonPlugin
+│   │   ├── systems.rs      # Button interaction systems
+│   │   └── types.rs        # Component types (StyledButton, etc.)
+│   ├── dialog/             # DialogBuilder module
+│   │   ├── mod.rs          # Gateway
+│   │   ├── builder.rs      # DialogBuilder implementation
+│   │   ├── plugin.rs       # DialogPlugin
+│   │   ├── systems.rs      # Dialog interaction (ESC, overlay clicks)
+│   │   └── types.rs        # DialogOverlay, DialogType, button markers
+│   ├── form/               # FormBuilder module
+│   │   ├── mod.rs          # Gateway
+│   │   ├── builder.rs      # FormBuilder implementation
+│   │   ├── field.rs        # Form field implementations
+│   │   └── types.rs        # FieldType, ValidationRule
+│   ├── label/              # LabelBuilder module
+│   │   ├── mod.rs          # Gateway
+│   │   ├── builder.rs      # LabelBuilder implementation
+│   │   └── types.rs        # Label, LabelStyle
+│   ├── panel/              # PanelBuilder module
+│   │   ├── mod.rs          # Gateway
+│   │   ├── builder.rs      # PanelBuilder implementation
+│   │   └── types.rs        # Panel, PanelStyle
+│   ├── progress/           # ProgressBarBuilder module
+│   │   ├── mod.rs          # Gateway
+│   │   ├── builder.rs      # ProgressBarBuilder implementation
+│   │   ├── plugin.rs       # ProgressBarPlugin
+│   │   ├── systems.rs      # Progress bar update systems
+│   │   └── types.rs        # ProgressBar, ProgressBarStyle
+│   ├── relationships/      # Bevy 0.16 custom relationships
+│   │   ├── mod.rs          # Gateway (exports only)
+│   │   ├── types.rs        # All relationship component definitions
+│   │   ├── systems.rs      # Relationship systems (button groups, etc.)
+│   │   └── plugin.rs       # UIRelationshipsPlugin
+│   ├── separator/          # SeparatorBuilder module
+│   │   ├── mod.rs          # Gateway
+│   │   ├── builder.rs      # SeparatorBuilder implementation
+│   │   └── types.rs        # Separator, SeparatorStyle, Orientation
+│   ├── slider/             # SliderBuilder module
+│   │   ├── mod.rs          # Gateway
+│   │   ├── builder.rs      # SliderBuilder implementation
+│   │   ├── plugin.rs       # SliderPlugin
+│   │   ├── systems.rs      # Slider drag systems
+│   │   └── types.rs        # Slider, SliderHandle, SliderTrack
+│   ├── styles/             # Centralized styling
+│   │   ├── mod.rs          # Gateway (exports colors & dimensions)
+│   │   ├── button_styles.rs # ButtonStyle and ButtonSize enums
+│   │   ├── colors.rs       # Color constants (PRIMARY, SECONDARY, etc.)
+│   │   └── dimensions.rs   # Size constants (FONT_SIZE_*, PADDING_*, etc.)
+│   ├── systems/            # Shared systems
+│   │   ├── mod.rs          # Gateway
+│   │   ├── cleanup.rs      # Generic despawn_entities<T> system
+│   │   ├── hover.rs        # HoverPlugin for button effects
+│   │   └── interaction.rs  # Generic interaction handling
+│   ├── text_input/         # TextInputBuilder module
+│   │   ├── mod.rs          # Gateway
+│   │   ├── builder.rs      # TextInputBuilder implementation
+│   │   ├── plugin.rs       # TextInputPlugin
+│   │   ├── systems.rs      # Focus management, validation
+│   │   └── types.rs        # InputFilter, TextInputFocus, etc.
+│   ├── utils/              # Utilities
+│   │   ├── mod.rs          # Gateway
+│   │   └── intrinsic.rs    # Intrinsic sizing utilities
+│   └── lib.rs              # Main library entry point
+├── Cargo.lock              # Dependency lock file
 ├── Cargo.toml              # Package manifest
-├── README.md               # Public documentation
-├── examples/               # Coming soon!
-│   └── (examples will be added in v0.2.0)
-└── src/
-    ├── lib.rs              # Main library entry point
-    │
-    ├── button/             # ButtonBuilder module
-    │   ├── mod.rs          # Gateway (exports only)
-    │   ├── builder.rs      # ButtonBuilder implementation
-    │   ├── plugin.rs       # ButtonPlugin
-    │   ├── systems.rs      # Button interaction systems
-    │   └── types.rs        # Component types (StyledButton, etc.)
-    │
-    ├── slider/             # SliderBuilder module
-    │   ├── mod.rs          # Gateway
-    │   ├── builder.rs      # SliderBuilder implementation
-    │   ├── plugin.rs       # SliderPlugin
-    │   ├── systems.rs      # Slider drag systems
-    │   └── types.rs        # Slider, SliderHandle, SliderTrack
-    │
-    ├── form/               # FormBuilder module
-    │   ├── mod.rs          # Gateway
-    │   ├── builder.rs      # FormBuilder implementation
-    │   ├── field.rs        # Form field implementations
-    │   └── types.rs        # FieldType, ValidationRule
-    │
-    ├── dialog/             # DialogBuilder module
-    │   ├── mod.rs          # Gateway
-    │   ├── builder.rs      # DialogBuilder implementation
-    │   ├── plugin.rs       # DialogPlugin
-    │   ├── systems.rs      # Dialog interaction (ESC, overlay clicks)
-    │   └── types.rs        # DialogOverlay, DialogType, button markers
-    │
-    ├── text_input/         # TextInputBuilder module
-    │   ├── mod.rs          # Gateway
-    │   ├── builder.rs      # TextInputBuilder implementation
-    │   ├── plugin.rs       # TextInputPlugin
-    │   ├── systems.rs      # Focus management, validation
-    │   └── types.rs        # InputFilter, TextInputFocus, etc.
-    │
-    ├── progress/           # ProgressBarBuilder module
-    │   ├── mod.rs          # Gateway
-    │   ├── builder.rs      # ProgressBarBuilder implementation
-    │   ├── plugin.rs       # ProgressBarPlugin
-    │   ├── systems.rs      # Progress bar update systems
-    │   └── types.rs        # ProgressBar, ProgressBarStyle
-    │
-    ├── label/              # LabelBuilder module
-    │   ├── mod.rs          # Gateway
-    │   ├── builder.rs      # LabelBuilder implementation
-    │   └── types.rs        # Label, LabelStyle
-    │
-    ├── panel/              # PanelBuilder module
-    │   ├── mod.rs          # Gateway
-    │   ├── builder.rs      # PanelBuilder implementation
-    │   └── types.rs        # Panel, PanelStyle
-    │
-    ├── separator/          # SeparatorBuilder module
-    │   ├── mod.rs          # Gateway
-    │   ├── builder.rs      # SeparatorBuilder implementation
-    │   └── types.rs        # Separator, SeparatorStyle, Orientation
-    │
-    ├── styles/             # Centralized styling
-    │   ├── mod.rs          # Gateway (exports colors & dimensions)
-    │   ├── colors.rs       # Color constants (PRIMARY, SECONDARY, etc.)
-    │   └── dimensions.rs   # Size constants (FONT_SIZE_*, PADDING_*, etc.)
-    │
-    ├── systems/            # Shared systems
-    │   ├── mod.rs          # Gateway
-    │   ├── cleanup.rs      # Generic despawn_entities<T> system
-    │   ├── hover.rs        # HoverPlugin for button effects
-    │   └── interaction.rs  # Generic interaction handling
-    │
-    └── utils/              # Utilities
-        ├── mod.rs          # Gateway
-        └── intrinsic.rs    # Intrinsic sizing utilities
+├── CHANGELOG.md            # Version history
+├── CONTRIBUTING.md         # Contribution guidelines
+├── LICENSE-APACHE          # Apache License 2.0
+├── LICENSE-MIT             # MIT License
+└── README.md               # This file
 
-Total: 48 Rust files across 13 modules
+Total: 72 files
+Modules: 14 (13 builders/utilities + relationships with 4 files)
 ```
