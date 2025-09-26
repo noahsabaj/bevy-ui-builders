@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2025-09-26
+
+### Added
+- **ScrollView Module**: Complete scrolling solution with dynamic sizing
+  - `ScrollViewBuilder` with viewport-based responsive sizing (Val::Vh/Vw)
+  - `ScrollViewPlugin` with mouse wheel scrolling support
+  - Visual scrollbar components with auto-hide functionality
+  - Smooth scroll animations with lerp interpolation
+  - Auto-scroll to focused text inputs
+  - `ScrollState` component tracking scroll position and limits
+- **Native Text Input System**: Full-featured text editing implementation
+  - Cursor rendering with proper visibility and blinking
+  - Text selection with keyboard and mouse
+  - Clipboard operations (Ctrl+C/V/X)
+  - Undo/Redo support (Ctrl+Z/Shift+Z)
+  - Input filtering (numeric, alphabetic, alphanumeric)
+  - Max length constraints
+  - Clear button functionality
+  - Password masking support
+  - Placeholder text
+- **Viewport-Relative Dimensions**: New responsive sizing constants
+  - `SPACING_*_VH/VW` for viewport-based spacing
+  - `PADDING_*_VH/VW` for responsive padding
+  - `MAX_CONTENT_HEIGHT/WIDTH` using viewport units
+  - Dynamic content sizing without hardcoded pixels
+- `flex_grow` and `flex_shrink` methods to PanelBuilder
+
+### Changed
+- TextInputBuilder now uses native text input implementation
+- text_input_demo updated to use ScrollViewBuilder with responsive sizing
+- Tab navigation now properly respects FocusGroupId boundaries
+- Cursor visibility logic improved for consistent rendering
+- Focus tracking enhanced for better text input interactions
+
+### Fixed
+- Tab key navigation jumping to random inputs outside focus groups
+- Cursor not visible in text inputs
+- Max length enforcement in text inputs
+- Focus state tracking issues
+- Content cut off at window edges (now scrollable)
+- Layout inconsistencies across different window sizes
+
+### Removed
+- 3 deprecated empty functions from text_input/systems.rs:
+  - `handle_text_input_focus` (empty stub)
+  - `handle_click_outside_unfocus` (empty stub)
+  - `validate_text_input_changes` (empty stub)
+- Technical debt from legacy text input implementation
+
 ## [0.1.3] - 2025-09-25
 
 ### Fixed
