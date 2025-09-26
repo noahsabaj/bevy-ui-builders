@@ -1,7 +1,8 @@
 //! Button interaction systems
 
 use bevy::prelude::*;
-use super::types::{HoverScale, HoverBrightness, OriginalColors, ButtonStateColors, StyledButton, ButtonAnimationState};
+use super::types::{StyledButton, ButtonStateColors, ButtonAnimationState};
+use crate::systems::hover::{HoverScale, HoverBrightness, OriginalColors, apply_brightness};
 
 /// System to handle hover scale effects
 pub fn handle_hover_scale(
@@ -38,17 +39,6 @@ pub fn handle_hover_brightness(
             }
         }
     }
-}
-
-/// Apply brightness multiplier to a color
-fn apply_brightness(color: Color, brightness: f32) -> Color {
-    let rgba = color.to_linear();
-    Color::LinearRgba(LinearRgba {
-        red: (rgba.red * brightness).min(1.0),
-        green: (rgba.green * brightness).min(1.0),
-        blue: (rgba.blue * brightness).min(1.0),
-        alpha: rgba.alpha,
-    })
 }
 
 /// Comprehensive button interaction system that handles all hover/pressed states

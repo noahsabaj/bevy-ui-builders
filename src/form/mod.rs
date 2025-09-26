@@ -17,5 +17,4 @@ pub use types::{
     FormSubmitButton,
     FormSubmitEvent,
     FormLayout,
-    ValidationTrigger,
 };

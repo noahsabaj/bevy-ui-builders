@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use std::collections::HashMap;
 use crate::styles::{colors, dimensions};
 use super::types::{
-    FormField, FieldType, ValidationRule, FormLayout, ValidationTrigger,
+    FormField, FieldType, ValidationRule, FormLayout,
     FormRoot, FormSubmitButton
 };
 use super::field::spawn_form_field;
@@ -18,7 +18,6 @@ pub struct FormBuilder {
     cancel_text: Option<String>,
     layout: FormLayout,
     width: Val,
-    validation_on: ValidationTrigger,
 }
 
 impl FormBuilder {
@@ -32,7 +31,6 @@ impl FormBuilder {
             cancel_text: None,
             layout: FormLayout::Vertical,
             width: Val::Px(400.0),
-            validation_on: ValidationTrigger::OnBlur,
         }
     }
 

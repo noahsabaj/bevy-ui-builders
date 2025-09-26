@@ -1,17 +1,14 @@
 //! Button component types and markers
 
 use bevy::prelude::*;
-use crate::styles::ButtonStyle;
 
 /// Marker component for styled buttons
 #[derive(Component)]
 pub struct StyledButton;
 
-/// Component storing the button's style for hover effects
-#[derive(Component, Copy, Clone)]
-pub struct ButtonStyleComponent(pub ButtonStyle);
-
-/// Component storing button state colors
+/// Component storing button-specific state colors
+/// This is kept for compatibility with existing button code
+/// but new code should use HoverColors from systems::hover
 #[derive(Component)]
 pub struct ButtonStateColors {
     pub normal_bg: Color,
@@ -22,15 +19,9 @@ pub struct ButtonStateColors {
     pub pressed_border: Color,
 }
 
-/// Component storing hover scale factor
-#[derive(Component)]
-pub struct HoverScale(pub f32);
-
-/// Component storing hover brightness factor
-#[derive(Component)]
-pub struct HoverBrightness(pub f32);
-
-/// Component for smooth animation of button properties
+/// Component for button-specific animation state
+/// This is kept for compatibility with existing button code
+/// but new code should use HoverAnimationState from systems::hover
 #[derive(Component)]
 pub struct ButtonAnimationState {
     /// Current scale value (animated)
@@ -45,9 +36,5 @@ pub struct ButtonAnimationState {
     pub animation_speed: f32,
 }
 
-/// Component storing original colors for hover effects
-#[derive(Component)]
-pub struct OriginalColors {
-    pub background: Color,
-    pub border: Color,
-}
+// Note: HoverScale, HoverBrightness, and OriginalColors have been moved to
+// systems::hover for universal use across all UI elements

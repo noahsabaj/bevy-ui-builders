@@ -2,7 +2,8 @@
 
 use bevy::prelude::*;
 use crate::styles::{colors, dimensions, ButtonStyle, ButtonSize};
-use super::types::{StyledButton, HoverScale, HoverBrightness, OriginalColors, ButtonStyleComponent, ButtonStateColors};
+use super::types::{StyledButton, ButtonStateColors};
+use crate::systems::hover::{HoverScale, HoverBrightness, OriginalColors};
 
 /// Builder for creating buttons with consistent styling
 pub struct ButtonBuilder {
@@ -96,7 +97,6 @@ impl ButtonBuilder {
             BorderColor(border_color),
             BorderRadius::all(Val::Px(dimensions::BORDER_RADIUS_MEDIUM)),
             StyledButton,
-            ButtonStyleComponent(self.style),
         ));
 
         // Store state colors for automatic hover effects
