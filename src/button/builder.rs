@@ -11,6 +11,8 @@ pub struct ButtonBuilder {
     style: ButtonStyle,
     size: ButtonSize,
     width: Option<Val>,
+    custom_height: Option<Val>,
+    margin: Option<UiRect>,
     hover_scale: Option<f32>,
     hover_brightness: Option<f32>,
     disabled: bool,
@@ -25,6 +27,8 @@ impl ButtonBuilder {
             style: ButtonStyle::Primary,
             size: ButtonSize::Medium,
             width: None,
+            custom_height: None,
+            margin: None,
             hover_scale: None,
             hover_brightness: None,
             disabled: false,
@@ -50,6 +54,18 @@ impl ButtonBuilder {
         self
     }
 
+    /// Set a custom height
+    pub fn height(mut self, height: Val) -> Self {
+        self.custom_height = Some(height);
+        self
+    }
+
+    /// Set the margin
+    pub fn margin(mut self, margin: UiRect) -> Self {
+        self.margin = Some(margin);
+        self
+    }
+
     /// Enable hover scale effect
     pub fn hover_scale(mut self, scale: f32) -> Self {
         self.hover_scale = Some(scale);
@@ -68,10 +84,29 @@ impl ButtonBuilder {
         self
     }
 
+    /// Set whether the button is enabled
+    pub fn enabled(mut self, enabled: bool) -> Self {
+        self.disabled = !enabled;
+        self
+    }
+
     /// Add an icon (emoji or symbol)
     pub fn icon(mut self, icon: impl Into<String>) -> Self {
         self.icon = Some(icon.into());
         self
+    }
+
+    /// Attach a marker component to the button
+    pub fn with_marker<M: Component>(self, marker: M) -> ButtonBuilderWithMarker<M> {
+        ButtonBuilderWithMarker {
+            builder: self,
+            marker,
+        }
+    }
+
+    /// Build the button entity (alias for build)
+    pub fn build_in(self, parent: &mut ChildSpawnerCommands) -> Entity {
+        self.build(parent)
     }
 
     /// Build the button entity
@@ -81,12 +116,15 @@ impl ButtonBuilder {
         let font_size = get_font_size(&self.size);
 
         let button_width = self.width.unwrap_or(Val::Px(width));
+        let button_height = self.custom_height.unwrap_or(Val::Px(height));
+        let button_margin = self.margin.unwrap_or_default();
 
         let mut button = parent.spawn((
             Button,
             Node {
                 width: button_width,
-                height: Val::Px(height),
+                height: button_height,
+                margin: button_margin,
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 border: UiRect::all(Val::Px(dimensions::BORDER_WIDTH_MEDIUM)),
@@ -252,4 +290,24 @@ pub fn danger_button(text: impl Into<String>) -> ButtonBuilder {
 /// Convenience function for creating a ghost button
 pub fn ghost_button(text: impl Into<String>) -> ButtonBuilder {
     ButtonBuilder::new(text).style(ButtonStyle::Ghost)
+}
+
+/// A ButtonBuilder with an attached marker component
+pub struct ButtonBuilderWithMarker<M: Component> {
+    builder: ButtonBuilder,
+    marker: M,
+}
+
+impl<M: Component> ButtonBuilderWithMarker<M> {
+    /// Build the button with the marker component
+    pub fn build(self, parent: &mut ChildSpawnerCommands) -> Entity {
+        let entity = self.builder.build(parent);
+        parent.commands().entity(entity).insert(self.marker);
+        entity
+    }
+
+    /// Build the button with the marker component (alias for build)
+    pub fn build_in(self, parent: &mut ChildSpawnerCommands) -> Entity {
+        self.build(parent)
+    }
 }

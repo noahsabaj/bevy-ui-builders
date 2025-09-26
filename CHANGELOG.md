@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2025-09-26
+
+### Added
+- **ButtonBuilder enhancements** for Living Worlds compatibility:
+  - `with_marker<T: Component>(marker: T)` - Attach custom marker components to buttons
+  - `build_in(parent: &mut ChildSpawnerCommands)` - Alias for `build()` method
+  - `margin(margin: UiRect)` - Set button margins
+  - `height(height: Val)` - Set custom button height
+  - `enabled(enabled: bool)` - Set enabled/disabled state (complement to `disabled()`)
+  - `ButtonBuilderWithMarker` struct for type-safe marker attachment
+- **SliderBuilder enhancements**:
+  - `build_in(parent: &mut ChildSpawnerCommands)` - Alias for `build()` method
+  - `with_format(format: ValueFormat)` - Alias for `format()` method
+- **PanelBuilder enhancements**:
+  - `border_color(color: Color)` - Set custom border color
+
+### Fixed
+- Living Worlds compatibility issues where the library expected methods that weren't published in v0.1.4
+- API consistency across all builders with `build_in()` methods
+
 ## [0.1.4] - 2025-09-26
 
 ### Added

@@ -28,6 +28,7 @@ pub struct PanelBuilder {
     flex_basis: Val,
     flex_grow: f32,
     custom_border: Option<UiRect>,
+    border_color: Option<Color>,
 }
 
 impl PanelBuilder {
@@ -55,6 +56,7 @@ impl PanelBuilder {
             flex_basis: Val::Auto,
             flex_grow: 0.0,
             custom_border: None,
+            border_color: None,
         }
     }
 
@@ -199,6 +201,12 @@ impl PanelBuilder {
         self
     }
 
+    /// Set border color
+    pub fn border_color(mut self, color: Color) -> Self {
+        self.border_color = Some(color);
+        self
+    }
+
     pub fn build(self, parent: &mut ChildSpawnerCommands) -> Entity {
         let background_color = self
             .custom_background
@@ -207,6 +215,10 @@ impl PanelBuilder {
         let border = self
             .custom_border
             .unwrap_or_else(|| UiRect::all(self.style.border_width()));
+
+        let border_color = self
+            .border_color
+            .unwrap_or_else(|| self.style.border_color());
 
         let mut panel_entity = parent.spawn((
             Node {
@@ -232,7 +244,7 @@ impl PanelBuilder {
                 ..default()
             },
             BackgroundColor(background_color),
-            BorderColor(self.style.border_color()),
+            BorderColor(border_color),
             Panel { style: self.style },
         ));
 

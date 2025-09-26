@@ -9,6 +9,7 @@ mod types;
 // Public exports only
 pub use builder::{
     ButtonBuilder,
+    ButtonBuilderWithMarker,
     primary_button,
     secondary_button,
     success_button,

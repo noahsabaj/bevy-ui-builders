@@ -60,6 +60,11 @@ impl SliderBuilder {
         self
     }
 
+    /// Set the value format (alias for format)
+    pub fn with_format(mut self, format: ValueFormat) -> Self {
+        self.format(format)
+    }
+
     /// Show/hide value preview
     pub fn with_preview(mut self, show: bool) -> Self {
         self.with_preview = show;
@@ -76,6 +81,11 @@ impl SliderBuilder {
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.label = Some(label.into());
         self
+    }
+
+    /// Build the slider (alias for build)
+    pub fn build_in(self, parent: &mut ChildSpawnerCommands) -> Entity {
+        self.build(parent)
     }
 
     /// Build the slider
