@@ -18,9 +18,9 @@ define_plugin!(TextInputPlugin {
         // Native input systems
         handle_keyboard_input,
         handle_tab_navigation,
-        handle_mouse_input,
+        handle_click_outside,  // Must run BEFORE handle_mouse_input to avoid race condition
+        handle_mouse_input,     // This sets focus on clicked inputs
         handle_mouse_drag,
-        handle_click_outside,
         update_cursor_blink,
         render_text,
         update_cursor_visual,
