@@ -16,6 +16,8 @@
 use bevy::prelude::*;
 use bevy_ui_builders::*;
 use bevy_ui_builders::text_input::{InputFilter, FocusGroupId, InputTransform};
+use bevy_ui_builders::scroll_view::{ScrollViewBuilder, ScrollDirection};
+use bevy_ui_builders::dimensions::*;
 
 fn main() {
     App::new()
@@ -46,21 +48,22 @@ fn setup(mut commands: Commands) {
     // Camera
     commands.spawn(Camera2d);
 
-    // Root node
+    // Root node with full viewport
     commands
         .spawn(Node {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
-            padding: UiRect::all(Val::Px(40.0)),
-            flex_direction: FlexDirection::Column,
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::FlexStart,
-            row_gap: Val::Px(30.0),
             ..default()
         })
         .with_children(|parent| {
+            // Scrollable container for all content
+            ScrollViewBuilder::new()
+                .max_height(Val::Vh(100.0))  // Full viewport height
+                .padding_vh(3.0)              // 3% viewport padding
+                .gap(Val::Vh(3.0))            // 3% viewport gap between elements
+                .build_with_children(parent, |scroll_container| {
             // Title
-            parent.spawn((
+            scroll_container.spawn((
                 Text::new("Native Text Input Demo"),
                 TextFont {
                     font_size: 36.0,
@@ -69,11 +72,12 @@ fn setup(mut commands: Commands) {
                 TextColor(Color::WHITE),
             ));
 
-            // Two column layout
-            parent
+            // Two column layout with responsive sizing
+            scroll_container
                 .spawn(Node {
                     flex_direction: FlexDirection::Row,
-                    column_gap: Val::Px(40.0),
+                    column_gap: Val::Vw(3.0),  // 3% viewport width gap
+                    flex_wrap: FlexWrap::Wrap,  // Allow wrapping on small screens
                     ..default()
                 })
                 .with_children(|columns| {
@@ -81,8 +85,11 @@ fn setup(mut commands: Commands) {
                     columns
                         .spawn(Node {
                             flex_direction: FlexDirection::Column,
-                            row_gap: Val::Px(25.0),
-                            width: Val::Px(400.0),
+                            row_gap: Val::Vh(2.5),  // 2.5% viewport height
+                            min_width: Val::Px(350.0),  // Minimum width
+                            flex_basis: Val::Percent(45.0),  // Take 45% of available width
+                            flex_grow: 1.0,
+                            flex_shrink: 1.0,
                             ..default()
                         })
                         .with_children(|container| {
@@ -166,8 +173,11 @@ fn setup(mut commands: Commands) {
                     columns
                         .spawn(Node {
                             flex_direction: FlexDirection::Column,
-                            row_gap: Val::Px(25.0),
-                            width: Val::Px(400.0),
+                            row_gap: Val::Vh(2.5),  // 2.5% viewport height
+                            min_width: Val::Px(350.0),  // Minimum width
+                            flex_basis: Val::Percent(45.0),  // Take 45% of available width
+                            flex_grow: 1.0,
+                            flex_shrink: 1.0,
                             ..default()
                         })
                         .with_children(|container| {
@@ -249,14 +259,14 @@ fn setup(mut commands: Commands) {
                 });
 
             // Focus group demonstration
-            parent
+            scroll_container
                 .spawn(Node {
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(15.0),
-                    padding: UiRect::all(Val::Px(20.0)),
+                    row_gap: Val::Vh(1.5),  // 1.5% viewport height
+                    padding: UiRect::all(Val::Vh(2.0)),  // 2% viewport height
                     border: UiRect::all(Val::Px(1.0)),
-                    margin: UiRect::top(Val::Px(20.0)),
-                    width: Val::Px(500.0),
+                    margin: UiRect::top(Val::Vh(2.0)),  // 2% viewport height
+                    width: Val::Percent(90.0),  // 90% of container width
                     ..default()
                 })
                 .with_child((
@@ -311,13 +321,13 @@ fn setup(mut commands: Commands) {
                 });
 
             // Keyboard shortcuts reference
-            parent
+            scroll_container
                 .spawn(Node {
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(8.0),
-                    padding: UiRect::all(Val::Px(15.0)),
+                    row_gap: Val::Vh(0.8),  // 0.8% viewport height
+                    padding: UiRect::all(Val::Vh(1.5)),  // 1.5% viewport height
                     border: UiRect::all(Val::Px(1.0)),
-                    margin: UiRect::top(Val::Px(20.0)),
+                    margin: UiRect::top(Val::Vh(2.0)),  // 2% viewport height
                     ..default()
                 })
                 .with_child((
@@ -379,7 +389,8 @@ fn setup(mut commands: Commands) {
                             });
                     }
                 });
-        });
+            }); // End of scrollable container
+        }); // End of root node
 }
 
 fn create_input_section<F>(parent: &mut ChildSpawnerCommands, label: &str, content: F)

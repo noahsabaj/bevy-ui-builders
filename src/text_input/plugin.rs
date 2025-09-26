@@ -3,7 +3,7 @@
 use bevy::prelude::*;
 use bevy_plugin_builder::define_plugin;
 use super::native_input::*;
-use super::systems::*;
+use super::systems::handle_clear_button_clicks;
 
 // Plugin that provides the complete text input system
 define_plugin!(TextInputPlugin {
@@ -26,9 +26,7 @@ define_plugin!(TextInputPlugin {
         render_text,
         render_selection,
 
-        // Legacy focus management (will be updated)
-        handle_text_input_focus,
-        validate_text_input_changes,
+        // Clear button functionality
         handle_clear_button_clicks
     ]
 });

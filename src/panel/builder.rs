@@ -98,6 +98,24 @@ impl PanelBuilder {
         self
     }
 
+    /// Make this panel vertically scrollable
+    pub fn scrollable(mut self) -> Self {
+        self.overflow = Overflow::scroll_y();
+        self
+    }
+
+    /// Make this panel scrollable in both directions
+    pub fn scrollable_both(mut self) -> Self {
+        self.overflow = Overflow::scroll();
+        self
+    }
+
+    /// Use responsive padding based on viewport dimensions
+    pub fn responsive_padding(mut self) -> Self {
+        self.padding = UiRect::all(Val::Vw(2.0)); // 2% of viewport width
+        self
+    }
+
     pub fn padding(mut self, padding: UiRect) -> Self {
         self.padding = padding;
         self

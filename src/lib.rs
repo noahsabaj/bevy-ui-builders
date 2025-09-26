@@ -44,6 +44,9 @@ pub mod panel;
 #[cfg(feature = "separator")]
 pub mod separator;
 
+// ScrollView module (always available - core functionality)
+pub mod scroll_view;
+
 // Future modules (not implemented yet)
 // #[cfg(feature = "tooltip")]
 // pub mod tooltip;
@@ -52,6 +55,7 @@ pub mod separator;
 pub use styles::{ButtonStyle, ButtonSize, colors, dimensions};
 pub use systems::cleanup::{despawn_entities, despawn_ui_entities};
 pub use systems::hover::HoverPlugin;
+pub use scroll_view::{ScrollViewBuilder, ScrollView, ScrollConfig, ScrollDirection, ScrollViewPlugin, scroll_view};
 pub use relationships::{
     BelongsToDialog, DialogElements,
     SliderPart, SliderParts,
@@ -130,7 +134,7 @@ pub mod prelude {
 }
 
 define_plugin!(UiBuilderPlugin {
-    plugins: [HoverPlugin, UIRelationshipsPlugin],
+    plugins: [HoverPlugin, UIRelationshipsPlugin, ScrollViewPlugin],
     custom_init: |app: &mut App| {
         #[cfg(feature = "button")]
         app.add_plugins(button::ButtonPlugin);

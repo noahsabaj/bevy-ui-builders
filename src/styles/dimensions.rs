@@ -1,5 +1,7 @@
 //! Dimension constants for consistent spacing and sizing
 
+use bevy::prelude::Val;
+
 // Button dimensions
 pub const BUTTON_WIDTH_SMALL: f32 = 80.0;
 pub const BUTTON_WIDTH_MEDIUM: f32 = 120.0;
@@ -81,3 +83,48 @@ pub const Z_INDEX_NOTIFICATION: i32 = 3000;
 pub const ANIMATION_FAST: f32 = 0.15;
 pub const ANIMATION_NORMAL: f32 = 0.3;
 pub const ANIMATION_SLOW: f32 = 0.5;
+
+// Dynamic responsive dimensions using viewport units
+// These adapt to the window size automatically
+
+// Responsive spacing using viewport height
+pub const SPACING_SMALL_VH: Val = Val::Vh(1.0);   // 1% of viewport height
+pub const SPACING_MEDIUM_VH: Val = Val::Vh(2.0);  // 2% of viewport height
+pub const SPACING_LARGE_VH: Val = Val::Vh(3.0);   // 3% of viewport height
+pub const SPACING_XLARGE_VH: Val = Val::Vh(5.0);  // 5% of viewport height
+
+// Responsive spacing using viewport width
+pub const SPACING_SMALL_VW: Val = Val::Vw(1.0);   // 1% of viewport width
+pub const SPACING_MEDIUM_VW: Val = Val::Vw(2.0);  // 2% of viewport width
+pub const SPACING_LARGE_VW: Val = Val::Vw(3.0);   // 3% of viewport width
+pub const SPACING_XLARGE_VW: Val = Val::Vw(5.0);  // 5% of viewport width
+
+// Responsive padding using viewport units
+pub const PADDING_SMALL_VH: Val = Val::Vh(1.0);
+pub const PADDING_MEDIUM_VH: Val = Val::Vh(2.0);
+pub const PADDING_LARGE_VH: Val = Val::Vh(3.0);
+pub const PADDING_SMALL_VW: Val = Val::Vw(1.0);
+pub const PADDING_MEDIUM_VW: Val = Val::Vw(2.0);
+pub const PADDING_LARGE_VW: Val = Val::Vw(3.0);
+
+// Flexible content widths using percentages
+pub const CONTENT_WIDTH_SMALL: Val = Val::Percent(30.0);
+pub const CONTENT_WIDTH_MEDIUM: Val = Val::Percent(50.0);
+pub const CONTENT_WIDTH_LARGE: Val = Val::Percent(80.0);
+pub const CONTENT_WIDTH_FULL: Val = Val::Percent(100.0);
+
+// Flexible content heights
+pub const CONTENT_HEIGHT_AUTO: Val = Val::Auto;
+pub const CONTENT_HEIGHT_HALF: Val = Val::Percent(50.0);
+pub const CONTENT_HEIGHT_FULL: Val = Val::Percent(100.0);
+
+// Maximum dimensions for containers (viewport relative)
+pub const MAX_CONTENT_HEIGHT: Val = Val::Vh(90.0);  // 90% viewport height
+pub const MAX_CONTENT_WIDTH: Val = Val::Vw(95.0);   // 95% viewport width
+pub const MAX_DIALOG_WIDTH: Val = Val::Vw(80.0);    // 80% viewport width
+pub const MAX_DIALOG_HEIGHT: Val = Val::Vh(80.0);   // 80% viewport height
+
+// Minimum dimensions to prevent collapse
+pub const MIN_INPUT_WIDTH: Val = Val::Px(150.0);
+pub const MIN_BUTTON_WIDTH: Val = Val::Px(80.0);
+pub const MIN_CONTENT_HEIGHT: Val = Val::Px(100.0);
