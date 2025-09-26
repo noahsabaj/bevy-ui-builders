@@ -17,14 +17,29 @@ pub fn handle_character_input(
     match key {
         Key::Character(text) => {
             info!("Received character input: '{}'", text);
-            // Check max length
-            if let Some(max) = settings.max_length {
-                if buffer.content.chars().count() >= max && !selection.has_selection() {
-                    return;
-                }
-            }
 
             for ch in text.chars() {
+                // Check max length before each character insertion
+                if let Some(max) = settings.max_length {
+                    let current_len = buffer.content.chars().count();
+                    let selection_len = if selection.has_selection() {
+                        if let Some((start, end)) = selection.range() {
+                            end - start
+                        } else {
+                            0
+                        }
+                    } else {
+                        0
+                    };
+
+                    // Calculate what the new length would be after insertion
+                    let new_len = current_len - selection_len + 1;
+                    if new_len > max {
+                        info!("Max length {} reached, ignoring character", max);
+                        return;  // Don't insert if it would exceed max length
+                    }
+                }
+
                 info!("Processing character: '{}', buffer before: '{}', cursor: {}", ch, buffer.content, buffer.cursor_pos);
                 if let Some(op) = apply_edit(&EditAction::InsertChar(ch), buffer, selection) {
                     history.undo_stack.push_back(op);
@@ -34,6 +49,26 @@ pub fn handle_character_input(
             }
         }
         Key::Space => {
+            // Check max length for space as well
+            if let Some(max) = settings.max_length {
+                let current_len = buffer.content.chars().count();
+                let selection_len = if selection.has_selection() {
+                    if let Some((start, end)) = selection.range() {
+                        end - start
+                    } else {
+                        0
+                    }
+                } else {
+                    0
+                };
+
+                let new_len = current_len - selection_len + 1;
+                if new_len > max {
+                    info!("Max length {} reached, ignoring space", max);
+                    return;
+                }
+            }
+
             // Handle space separately since it's not a Character variant
             if let Some(op) = apply_edit(&EditAction::InsertChar(' '), buffer, selection) {
                 history.undo_stack.push_back(op);

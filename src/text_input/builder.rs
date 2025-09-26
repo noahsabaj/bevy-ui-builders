@@ -95,7 +95,7 @@ fn build_text_input_with_extras<M>(
                         text_color: colors::TEXT_PRIMARY,
                         placeholder: builder.placeholder.clone().unwrap_or_default(),
                         placeholder_color: colors::TEXT_MUTED,
-                        cursor_color: colors::PRIMARY,
+                        cursor_color: Color::WHITE,  // White cursor for maximum visibility
                         selection_color: colors::PRIMARY.with_alpha(0.3),
                         mask_char: None,
                     },
@@ -178,7 +178,7 @@ fn build_text_input_with_extras<M>(
                 text_color: colors::TEXT_PRIMARY,
                 placeholder: builder.placeholder.unwrap_or_default(),
                 placeholder_color: colors::TEXT_MUTED,
-                cursor_color: colors::PRIMARY,
+                cursor_color: Color::WHITE,  // White cursor for maximum visibility
                 selection_color: colors::PRIMARY.with_alpha(0.3),
                 mask_char: None,
             },

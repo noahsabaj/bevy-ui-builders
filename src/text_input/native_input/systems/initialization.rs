@@ -53,14 +53,15 @@ pub fn init_text_input(
         let cursor_entity = parent.spawn((
             Node {
                 width: Val::Px(2.0),
-                height: Val::Px(20.0),  // Fixed height for now
+                height: Val::Percent(80.0),  // 80% of parent height for better fit
                 position_type: PositionType::Absolute,
                 left: Val::Px(10.0),  // Start with padding offset
-                top: Val::Px(8.0),   // Center vertically (assuming ~36px input height)
+                top: Val::Percent(10.0),  // Center vertically with 10% margin
                 ..default()
             },
             BackgroundColor(Color::WHITE),
             Visibility::Hidden,  // Start hidden until focused
+            ZIndex(100),  // Ensure cursor is above text and background
             TextInputCursor {
                 input_entity: entity,
             },

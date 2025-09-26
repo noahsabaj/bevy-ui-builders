@@ -131,9 +131,9 @@ pub fn update_cursor_visual(
                         match cursor_visual.style {
                             CursorStyle::Line => {
                                 node.width = Val::Px(2.0);
-                                node.height = Val::Percent(100.0);
+                                node.height = Val::Percent(80.0);  // Match initialization height
                                 node.left = Val::Px(cursor_x + padding_offset);
-                                node.top = Val::Px(0.0);
+                                node.top = Val::Percent(10.0);  // Match initialization top
                             }
                             CursorStyle::Block => {
                                 // Get character width at cursor position
@@ -146,9 +146,9 @@ pub fn update_cursor_visual(
                                 };
 
                                 node.width = Val::Px(char_width);
-                                node.height = Val::Percent(100.0);
+                                node.height = Val::Percent(80.0);  // Match line cursor height
                                 node.left = Val::Px(cursor_x + padding_offset);
-                                node.top = Val::Px(0.0);
+                                node.top = Val::Percent(10.0);  // Match line cursor top
 
                                 // Make block cursor semi-transparent
                                 bg_color.0 = input_visual.cursor_color.with_alpha(0.5);
@@ -166,7 +166,7 @@ pub fn update_cursor_visual(
                                 node.width = Val::Px(char_width);
                                 node.height = Val::Px(2.0);
                                 node.left = Val::Px(cursor_x + padding_offset);
-                                node.bottom = Val::Px(0.0);
+                                node.bottom = Val::Percent(10.0);  // 10% from bottom
                                 node.top = Val::Auto;
                             }
                         }
