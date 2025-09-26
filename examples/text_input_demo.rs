@@ -1,16 +1,28 @@
-//! Text Input Demo - Demonstrates text input features, filters, and validation
+//! Text Input Demo - Demonstrates native text input features
 //!
 //! Run with: cargo run --example text_input_demo --features text_input
+//!
+//! Features showcased:
+//! - Text selection (Ctrl+A, Shift+arrows)
+//! - Clipboard operations (Ctrl+C, Ctrl+V, Ctrl+X)
+//! - Undo/Redo (Ctrl+Z, Ctrl+Shift+Z)
+//! - Input filtering (numeric, alphabetic, alphanumeric)
+//! - Max length constraints
+//! - Clear buttons
+//! - Focus groups with Tab navigation
+//! - Password masking
+//! - Placeholder text
 
 use bevy::prelude::*;
 use bevy_ui_builders::*;
-use bevy_ui_builders::text_input::{InputFilter, FocusGroupId};
+use bevy_ui_builders::text_input::{InputFilter, FocusGroupId, InputTransform};
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(UiBuilderPlugin)
         .add_systems(Startup, setup)
+        .add_systems(Update, log_text_changes)
         .run();
 }
 
@@ -22,10 +34,13 @@ struct UsernameInput;
 struct EmailInput;
 
 #[derive(Component)]
+struct PasswordInput;
+
+#[derive(Component)]
 struct PhoneInput;
 
 #[derive(Component)]
-struct AgeInput;
+struct NotesInput;
 
 fn setup(mut commands: Commands) {
     // Camera
@@ -39,14 +54,14 @@ fn setup(mut commands: Commands) {
             padding: UiRect::all(Val::Px(40.0)),
             flex_direction: FlexDirection::Column,
             align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
+            justify_content: JustifyContent::FlexStart,
             row_gap: Val::Px(30.0),
             ..default()
         })
         .with_children(|parent| {
             // Title
             parent.spawn((
-                Text::new("Text Input Demo"),
+                Text::new("Native Text Input Demo"),
                 TextFont {
                     font_size: 36.0,
                     ..default()
@@ -54,139 +69,315 @@ fn setup(mut commands: Commands) {
                 TextColor(Color::WHITE),
             ));
 
-            // Main container
+            // Two column layout
             parent
                 .spawn(Node {
-                    flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(25.0),
-                    width: Val::Px(400.0),
+                    flex_direction: FlexDirection::Row,
+                    column_gap: Val::Px(40.0),
                     ..default()
                 })
-                .with_children(|container| {
-                    // Basic text input
-                    create_input_section(container, "Basic Input", |section| {
-                        TextInputBuilder::new()
-                            .with_placeholder("Enter text here...")
-                            .build(section);
-                    });
+                .with_children(|columns| {
+                    // Left column - Basic features
+                    columns
+                        .spawn(Node {
+                            flex_direction: FlexDirection::Column,
+                            row_gap: Val::Px(25.0),
+                            width: Val::Px(400.0),
+                            ..default()
+                        })
+                        .with_children(|container| {
+                            // Section title
+                            container.spawn((
+                                Text::new("Basic Features"),
+                                TextFont {
+                                    font_size: 20.0,
+                                    ..default()
+                                },
+                                TextColor(Color::srgb(0.9, 0.9, 0.9)),
+                            ));
 
-                    // Input with value and clear button
-                    create_input_section(container, "With Clear Button", |section| {
-                        TextInputBuilder::new()
-                            .with_value("Pre-filled text")
-                            .with_clear_button()
-                            .build(section);
-                    });
+                            // Basic text input
+                            create_input_section(container, "Standard Input", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("Type anything here...")
+                                    .build(section);
+                            });
 
-                    // Numeric only input
-                    create_input_section(container, "Numbers Only", |section| {
-                        TextInputBuilder::new()
-                            .with_placeholder("Enter numbers...")
-                            .numeric_only()
-                            .with_value("12345")
-                            .build(section);
-                    });
+                            // Input with value and clear button
+                            create_input_section(container, "With Clear Button", |section| {
+                                TextInputBuilder::new()
+                                    .with_value("Click × to clear")
+                                    .with_clear_button()
+                                    .build(section);
+                            });
 
-                    // Alphanumeric only input
-                    create_input_section(container, "Alphanumeric Only", |section| {
-                        TextInputBuilder::new()
-                            .with_placeholder("Letters and numbers only...")
-                            .alphanumeric_only()
-                            .build(section);
-                    });
+                            // Password input (would need mask_char support)
+                            create_input_section(container, "Password Field", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("Enter password...")
+                                    .with_marker(PasswordInput)
+                                    .build(section);
+                                // Note: mask_char would be set in TextInputVisual
+                            });
 
-                    // Input with max length
-                    create_input_section(container, "Max Length (10 chars)", |section| {
-                        TextInputBuilder::new()
-                            .with_placeholder("Max 10 characters...")
-                            .with_max_length(10)
-                            .with_clear_button()
-                            .build(section);
-                    });
+                            // Numeric only input
+                            create_input_section(container, "Numbers Only", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("0-9 only...")
+                                    .numeric_only()
+                                    .build(section);
+                            });
 
-                    // Input with custom marker component
-                    create_input_section(container, "Username (with marker)", |section| {
-                        TextInputBuilder::new()
-                            .with_placeholder("Enter username...")
-                            .alphanumeric_only()
-                            .with_max_length(20)
-                            .with_marker(UsernameInput)
-                            .build(section);
-                    });
+                            // Integer input (with negative)
+                            create_input_section(container, "Integer Input", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("Allows negative...")
+                                    .integer_only()
+                                    .with_value("-42")
+                                    .build(section);
+                            });
 
-                    // Email input with multiple markers
-                    create_input_section(container, "Email (with two markers)", |section| {
-                        TextInputBuilder::new()
-                            .with_placeholder("user@example.com")
-                            .with_filter(InputFilter::None)  // Email validation would use regex or custom function
-                            .with_marker(EmailInput)
-                            .and_marker(RequiredField)
-                            .build(section);
-                    });
+                            // Decimal input
+                            create_input_section(container, "Decimal Numbers", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("3.14159...")
+                                    .decimal_only()
+                                    .build(section);
+                            });
 
-                    // Focus group demonstration
-                    create_focus_group_section(container);
+                            // Alphabetic only
+                            create_input_section(container, "Letters Only", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("A-Z, a-z only...")
+                                    .alphabetic_only()
+                                    .build(section);
+                            });
+
+                            // Alphanumeric
+                            create_input_section(container, "Alphanumeric", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("Letters and numbers...")
+                                    .alphanumeric_only()
+                                    .build(section);
+                            });
+                        });
+
+                    // Right column - Advanced features
+                    columns
+                        .spawn(Node {
+                            flex_direction: FlexDirection::Column,
+                            row_gap: Val::Px(25.0),
+                            width: Val::Px(400.0),
+                            ..default()
+                        })
+                        .with_children(|container| {
+                            // Section title
+                            container.spawn((
+                                Text::new("Advanced Features"),
+                                TextFont {
+                                    font_size: 20.0,
+                                    ..default()
+                                },
+                                TextColor(Color::srgb(0.9, 0.9, 0.9)),
+                            ));
+
+                            // Max length constraint
+                            create_input_section(container, "Max Length (10 chars)", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("Max 10 characters...")
+                                    .with_max_length(10)
+                                    .with_clear_button()
+                                    .build(section);
+                            });
+
+                            // Text transformation - uppercase
+                            create_input_section(container, "Auto Uppercase", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("Converts to UPPERCASE...")
+                                    .with_transform(InputTransform::Uppercase)
+                                    .build(section);
+                            });
+
+                            // Text transformation - lowercase
+                            create_input_section(container, "Auto Lowercase", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("converts to lowercase...")
+                                    .with_transform(InputTransform::Lowercase)
+                                    .with_value("HELLO WORLD")
+                                    .build(section);
+                            });
+
+                            // Username with marker
+                            create_input_section(container, "Username (with validation)", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("Enter username...")
+                                    .alphanumeric_only()
+                                    .with_max_length(20)
+                                    .with_transform(InputTransform::Lowercase)
+                                    .with_marker(UsernameInput)
+                                    .build(section);
+                            });
+
+                            // Email with multiple markers
+                            create_input_section(container, "Email Address", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("user@example.com")
+                                    .with_marker(EmailInput)
+                                    .and_marker(RequiredField)
+                                    .build(section);
+                            });
+
+                            // Phone number
+                            create_input_section(container, "Phone Number", |section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("555-1234")
+                                    .with_filter(InputFilter::Custom(|s| {
+                                        s.chars().all(|c| c.is_numeric() || c == '-' || c == ' ')
+                                    }))
+                                    .with_marker(PhoneInput)
+                                    .build(section);
+                            });
+
+                            // Inactive/Read-only input
+                            create_input_section(container, "Read-Only Field", |section| {
+                                TextInputBuilder::new()
+                                    .with_value("This field is read-only")
+                                    .inactive()
+                                    .build(section);
+                            });
+                        });
                 });
 
-            // Instructions
+            // Focus group demonstration
             parent
                 .spawn(Node {
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(5.0),
+                    row_gap: Val::Px(15.0),
+                    padding: UiRect::all(Val::Px(20.0)),
+                    border: UiRect::all(Val::Px(1.0)),
+                    margin: UiRect::top(Val::Px(20.0)),
+                    width: Val::Px(500.0),
+                    ..default()
+                })
+                .with_child((
+                    BackgroundColor(Color::srgba(0.1, 0.1, 0.15, 0.8)),
+                    BorderColor(Color::srgba(0.4, 0.4, 0.5, 0.5)),
+                ))
+                .with_children(|section| {
+                    // Title
+                    section.spawn((
+                        Text::new("Focus Group (Tab Navigation)"),
+                        TextFont {
+                            font_size: 18.0,
+                            ..default()
+                        },
+                        TextColor(Color::WHITE),
+                    ));
+
+                    // Form fields in focus group
+                    section
+                        .spawn(Node {
+                            flex_direction: FlexDirection::Row,
+                            column_gap: Val::Px(15.0),
+                            ..default()
+                        })
+                        .with_children(|form| {
+                            // First name
+                            create_input_section(form, "First Name", |input_section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("John")
+                                    .with_focus_group(FocusGroupId::Custom(1))
+                                    .build(input_section);
+                            });
+
+                            // Last name
+                            create_input_section(form, "Last Name", |input_section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("Doe")
+                                    .with_focus_group(FocusGroupId::Custom(1))
+                                    .build(input_section);
+                            });
+
+                            // Age
+                            create_input_section(form, "Age", |input_section| {
+                                TextInputBuilder::new()
+                                    .with_placeholder("25")
+                                    .numeric_only()
+                                    .with_max_length(3)
+                                    .with_focus_group(FocusGroupId::Custom(1))
+                                    .build(input_section);
+                            });
+                        });
+                });
+
+            // Keyboard shortcuts reference
+            parent
+                .spawn(Node {
+                    flex_direction: FlexDirection::Column,
+                    row_gap: Val::Px(8.0),
                     padding: UiRect::all(Val::Px(15.0)),
                     border: UiRect::all(Val::Px(1.0)),
                     margin: UiRect::top(Val::Px(20.0)),
                     ..default()
                 })
                 .with_child((
-                    BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.5)),
-                    BorderColor(Color::srgba(0.3, 0.3, 0.3, 0.5)),
+                    BackgroundColor(Color::srgba(0.05, 0.05, 0.05, 0.8)),
+                    BorderColor(Color::srgba(0.2, 0.2, 0.2, 0.5)),
                 ))
-                .with_children(|instructions| {
-                    instructions.spawn((
-                        Text::new("Tips:"),
+                .with_children(|shortcuts| {
+                    shortcuts.spawn((
+                        Text::new("Keyboard Shortcuts:"),
                         TextFont {
                             font_size: 16.0,
                             ..default()
                         },
-                        TextColor(Color::WHITE),
+                        TextColor(Color::srgb(0.9, 0.9, 0.9)),
                     ));
 
-                    instructions.spawn((
-                        Text::new("Click on any input to focus"),
-                        TextFont {
-                            font_size: 14.0,
-                            ..default()
-                        },
-                        TextColor(Color::srgb(0.7, 0.7, 0.7)),
-                    ));
+                    let shortcut_list = [
+                        ("Ctrl+A", "Select all text"),
+                        ("Ctrl+C", "Copy selected text"),
+                        ("Ctrl+V", "Paste from clipboard"),
+                        ("Ctrl+X", "Cut selected text"),
+                        ("Ctrl+Z", "Undo last change"),
+                        ("Ctrl+Shift+Z", "Redo last undo"),
+                        ("Shift+Arrow", "Extend selection"),
+                        ("Ctrl+Arrow", "Jump by word"),
+                        ("Home/End", "Jump to line start/end"),
+                        ("Tab", "Next field (in focus group)"),
+                        ("Shift+Tab", "Previous field (in focus group)"),
+                        ("Escape", "Clear selection / Unfocus"),
+                        ("Enter", "Submit (single-line inputs)"),
+                    ];
 
-                    instructions.spawn((
-                        Text::new("Type to enter text"),
-                        TextFont {
-                            font_size: 14.0,
-                            ..default()
-                        },
-                        TextColor(Color::srgb(0.7, 0.7, 0.7)),
-                    ));
-
-                    instructions.spawn((
-                        Text::new("Tab/Shift+Tab to navigate in focus groups"),
-                        TextFont {
-                            font_size: 14.0,
-                            ..default()
-                        },
-                        TextColor(Color::srgb(0.7, 0.7, 0.7)),
-                    ));
-
-                    instructions.spawn((
-                        Text::new("Some inputs have validation/filters"),
-                        TextFont {
-                            font_size: 14.0,
-                            ..default()
-                        },
-                        TextColor(Color::srgb(0.7, 0.7, 0.7)),
-                    ));
+                    for (key, description) in shortcut_list {
+                        shortcuts
+                            .spawn(Node {
+                                flex_direction: FlexDirection::Row,
+                                column_gap: Val::Px(10.0),
+                                ..default()
+                            })
+                            .with_children(|row| {
+                                // Key
+                                row.spawn((
+                                    Text::new(key),
+                                    TextFont {
+                                        font_size: 13.0,
+                                        ..default()
+                                    },
+                                    TextColor(Color::srgb(0.6, 0.8, 1.0)),
+                                ));
+                                // Description
+                                row.spawn((
+                                    Text::new(description),
+                                    TextFont {
+                                        font_size: 13.0,
+                                        ..default()
+                                    },
+                                    TextColor(Color::srgb(0.7, 0.7, 0.7)),
+                                ));
+                            });
+                    }
                 });
         });
 }
@@ -206,10 +397,10 @@ where
             section.spawn((
                 Text::new(label),
                 TextFont {
-                    font_size: 14.0,
+                    font_size: 12.0,
                     ..default()
                 },
-                TextColor(Color::srgb(0.8, 0.8, 0.8)),
+                TextColor(Color::srgb(0.7, 0.7, 0.7)),
             ));
 
             // Input
@@ -217,66 +408,19 @@ where
         });
 }
 
-fn create_focus_group_section(parent: &mut ChildSpawnerCommands) {
-    parent
-        .spawn(Node {
-            flex_direction: FlexDirection::Column,
-            row_gap: Val::Px(15.0),
-            padding: UiRect::all(Val::Px(15.0)),
-            border: UiRect::all(Val::Px(1.0)),
-            ..default()
-        })
-        .with_child((
-            BackgroundColor(Color::srgba(0.15, 0.15, 0.15, 0.8)),
-            BorderColor(Color::srgba(0.3, 0.3, 0.3, 0.5)),
-        ))
-        .with_children(|section| {
-            // Title
-            section.spawn((
-                Text::new("Focus Group Example (Tab Navigation)"),
-                TextFont {
-                    font_size: 16.0,
-                    ..default()
-                },
-                TextColor(Color::WHITE),
-            ));
-
-            // First name input
-            create_input_section(section, "First Name", |input_section| {
-                TextInputBuilder::new()
-                    .with_placeholder("John")
-                    .with_focus_group(FocusGroupId::Custom(1))
-                    .build(input_section);
-            });
-
-            // Last name input
-            create_input_section(section, "Last Name", |input_section| {
-                TextInputBuilder::new()
-                    .with_placeholder("Doe")
-                    .with_focus_group(FocusGroupId::Custom(1))
-                    .build(input_section);
-            });
-
-            // Email input in same focus group
-            create_input_section(section, "Email", |input_section| {
-                TextInputBuilder::new()
-                    .with_placeholder("john.doe@example.com")
-                    .with_focus_group(FocusGroupId::Custom(1))
-                    .build(input_section);
-            });
-
-            // Phone input in same focus group
-            create_input_section(section, "Phone", |input_section| {
-                TextInputBuilder::new()
-                    .with_placeholder("555-1234")
-                    .numeric_only()
-                    .with_focus_group(FocusGroupId::Custom(1))
-                    .with_marker(PhoneInput)
-                    .build(input_section);
-            });
-        });
-}
-
 // Marker component for required fields
 #[derive(Component)]
 struct RequiredField;
+
+// System to log text changes for demonstration
+fn log_text_changes(
+    username_query: Query<&bevy_ui_builders::text_input::native_input::TextBuffer, (With<UsernameInput>, Changed<bevy_ui_builders::text_input::native_input::TextBuffer>)>,
+    email_query: Query<&bevy_ui_builders::text_input::native_input::TextBuffer, (With<EmailInput>, Changed<bevy_ui_builders::text_input::native_input::TextBuffer>)>,
+) {
+    for buffer in &username_query {
+        info!("Username changed: {}", buffer.content);
+    }
+    for buffer in &email_query {
+        info!("Email changed: {}", buffer.content);
+    }
+}

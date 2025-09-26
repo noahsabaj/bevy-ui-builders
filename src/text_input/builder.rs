@@ -1,13 +1,14 @@
 //! TextInputBuilder implementation
 
 use bevy::prelude::*;
-use bevy_simple_text_input::{
-    TextInput, TextInputInactive, TextInputSettings, TextInputTextColor, TextInputTextFont,
-    TextInputValue,
-};
 use crate::button::{ButtonBuilder, ButtonSize};
 use crate::styles::{colors, ButtonStyle};
+use crate::systems::hover::HoverColors;
 use super::types::*;
+use super::native_input::{
+    NativeTextInput, TextBuffer, TextInputVisual,
+    TextInputSettings, TabBehavior,
+};
 
 /// Builder for creating text inputs with managed focus
 #[derive(Clone)]
@@ -79,36 +80,49 @@ fn build_text_input_with_extras<M>(
                     BackgroundColor(colors::BACKGROUND_LIGHT),
                     BorderColor(colors::BORDER_DEFAULT),
                     BorderRadius::all(Val::Px(5.0)),
-                    TextInput,
-                    TextInputValue(
-                        if builder.value.is_empty() {
-                            builder.placeholder.clone().unwrap_or_default()
-                        } else {
-                            builder.value.clone()
+                    // Native text input components
+                    NativeTextInput,
+                    TextBuffer {
+                        content: builder.value.clone(),
+                        cursor_pos: builder.value.chars().count(),
+                        is_focused: false,
+                    },
+                    TextInputVisual {
+                        font: TextFont {
+                            font_size: builder.font_size,
+                            ..default()
                         },
-                    ),
-                    TextInputTextFont(TextFont {
-                        font_size: builder.font_size,
-                        ..default()
-                    }),
-                    TextInputTextColor(TextColor(colors::TEXT_PRIMARY)),
+                        text_color: colors::TEXT_PRIMARY,
+                        placeholder: builder.placeholder.clone().unwrap_or_default(),
+                        placeholder_color: colors::TEXT_MUTED,
+                        cursor_color: colors::PRIMARY,
+                        selection_color: colors::PRIMARY.with_alpha(0.3),
+                        mask_char: None,
+                    },
                     TextInputSettings {
+                        multiline: false,
+                        max_length: builder.filter.as_ref().and_then(|f| f.max_length),
                         retain_on_submit: builder.retain_on_submit,
-                        ..default()
+                        read_only: builder.inactive,
+                        tab_behavior: TabBehavior::NextField,
                     },
                     // Focus management
                     builder.focus_type.clone(),
                     // Make it a button so it can be clicked
                     Button,
+                    // Add hover effects for better interactivity
+                    HoverColors {
+                        normal_bg: colors::BACKGROUND_LIGHT,
+                        hover_bg: colors::BACKGROUND_MEDIUM,
+                        normal_border: colors::BORDER_DEFAULT,
+                        hover_border: colors::BORDER_FOCUS,
+                    },
                 ));
 
                 // Add extras from callback
                 extras(&mut entity_commands);
 
-                // Add inactive state if requested
-                if builder.inactive {
-                    entity_commands.insert(TextInputInactive(true));
-                }
+                // Inactive state handled in TextInputSettings
 
                 // Add filter if specified
                 if let Some(filter) = builder.filter.clone() {
@@ -149,36 +163,49 @@ fn build_text_input_with_extras<M>(
             BackgroundColor(colors::BACKGROUND_LIGHT),
             BorderColor(colors::BORDER_DEFAULT),
             BorderRadius::all(Val::Px(5.0)),
-            TextInput,
-            TextInputValue(
-                if builder.value.is_empty() {
-                    builder.placeholder.unwrap_or_default()
-                } else {
-                    builder.value
+            // Native text input components
+            NativeTextInput,
+            TextBuffer {
+                content: builder.value.clone(),
+                cursor_pos: builder.value.chars().count(),
+                is_focused: false,
+            },
+            TextInputVisual {
+                font: TextFont {
+                    font_size: builder.font_size,
+                    ..default()
                 },
-            ),
-            TextInputTextFont(TextFont {
-                font_size: builder.font_size,
-                ..default()
-            }),
-            TextInputTextColor(TextColor(colors::TEXT_PRIMARY)),
+                text_color: colors::TEXT_PRIMARY,
+                placeholder: builder.placeholder.unwrap_or_default(),
+                placeholder_color: colors::TEXT_MUTED,
+                cursor_color: colors::PRIMARY,
+                selection_color: colors::PRIMARY.with_alpha(0.3),
+                mask_char: None,
+            },
             TextInputSettings {
+                multiline: false,
+                max_length: builder.filter.as_ref().and_then(|f| f.max_length),
                 retain_on_submit: builder.retain_on_submit,
-                ..default()
+                read_only: builder.inactive,
+                tab_behavior: TabBehavior::NextField,
             },
             // Focus management
             builder.focus_type.clone(),
             // Make it a button so it can be clicked
             Button,
+            // Add hover effects for better interactivity
+            HoverColors {
+                normal_bg: colors::BACKGROUND_LIGHT,
+                hover_bg: colors::BACKGROUND_MEDIUM,
+                normal_border: colors::BORDER_DEFAULT,
+                hover_border: colors::BORDER_FOCUS,
+            },
         ));
 
         // Add extras from callback
         extras(&mut entity_commands);
 
-        // Add inactive state if requested
-        if builder.inactive {
-            entity_commands.insert(TextInputInactive(true));
-        }
+        // Inactive state handled in TextInputSettings
 
         // Add filter if specified
         if let Some(filter) = builder.filter.clone() {

@@ -4,6 +4,7 @@ mod builder;
 mod plugin;
 mod systems;
 mod types;
+pub mod native_input;
 
 // Public exports only
 pub use builder::{TextInputBuilder, TextInputBuilderWithMarker, TextInputBuilderWithTwoMarkers, text_input};
@@ -16,4 +17,16 @@ pub use types::{
     ClearButtonTarget,
     TextInputFocus,
     FocusGroupId,
+};
+pub use native_input::{
+    NativeTextInput,
+    TextBuffer,
+    SelectionState,
+    TextInputVisual,
+    CursorVisual,
+    CursorStyle,
+    TextInputSettings,
+    TabBehavior,
+    TextInputSubmitEvent,
+    TextInputChangeEvent,
 };

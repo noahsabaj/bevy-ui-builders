@@ -1,13 +1,33 @@
 //! Text input plugin
 
+use bevy::prelude::*;
 use bevy_plugin_builder::define_plugin;
+use super::native_input::*;
 use super::systems::*;
 
 // Plugin that provides the complete text input system
 define_plugin!(TextInputPlugin {
+    events: [
+        TextInputSubmitEvent,
+        TextInputChangeEvent
+    ],
+    custom_init: |app: &mut App| {
+        app.add_observer(init_text_input);
+    },
     update: [
+        // Native input systems
+        handle_keyboard_input,
+        handle_tab_navigation,
+        handle_mouse_input,
+        handle_mouse_drag,
+        handle_click_outside,
+        update_cursor_blink,
+        render_text,
+        update_cursor_visual,
+        render_selection,
+
+        // Legacy focus management (will be updated)
         handle_text_input_focus,
-        handle_click_outside_unfocus,
         validate_text_input_changes,
         handle_clear_button_clicks
     ]
