@@ -26,7 +26,6 @@ pub use components::{
     ScrollViewport,
     UndoHistory,
     EditOperation,
-    TextInputCursor,
     TextInputSelection,
 };
 
@@ -53,8 +52,8 @@ pub use systems::{
     handle_tab_navigation,
     update_cursor_blink,
     render_text,
-    update_cursor_visual,
     render_selection,
+    update_focus_visual,
 };
 
 // Helper function exports (if needed externally)

@@ -75,6 +75,7 @@ fn build_text_input_with_extras<M>(
                         border: UiRect::all(Val::Px(2.0)),
                         justify_content: JustifyContent::Start,
                         align_items: AlignItems::Center,
+                        overflow: Overflow::visible(),  // Prevent cursor clipping
                         ..default()
                     },
                     BackgroundColor(colors::BACKGROUND_LIGHT),
@@ -158,6 +159,7 @@ fn build_text_input_with_extras<M>(
                 border: UiRect::all(Val::Px(2.0)),
                 justify_content: JustifyContent::Start,
                 align_items: AlignItems::Center,
+                overflow: Overflow::visible(),  // Prevent cursor clipping
                 ..default()
             },
             BackgroundColor(colors::BACKGROUND_LIGHT),

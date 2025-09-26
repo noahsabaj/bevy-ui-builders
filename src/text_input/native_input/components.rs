@@ -180,13 +180,6 @@ pub struct EditOperation {
 #[derive(Component)]
 pub struct TextInputInner;
 
-/// Marker component for the cursor entity
-#[derive(Component)]
-pub struct TextInputCursor {
-    /// The input entity this cursor belongs to
-    pub input_entity: Entity,
-}
-
 /// Marker component for the selection overlay
 #[derive(Component)]
 pub struct TextInputSelection {

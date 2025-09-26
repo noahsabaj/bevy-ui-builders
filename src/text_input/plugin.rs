@@ -22,8 +22,8 @@ define_plugin!(TextInputPlugin {
         handle_mouse_input,     // This sets focus on clicked inputs
         handle_mouse_drag,
         update_cursor_blink,
+        update_focus_visual,    // Maintain focus border color
         render_text,
-        update_cursor_visual,
         render_selection,
 
         // Legacy focus management (will be updated)

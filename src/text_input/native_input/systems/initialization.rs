@@ -27,9 +27,7 @@ pub fn init_text_input(
         RelativeCursorPosition::default(),
     ));
 
-    // Spawn text and cursor as direct children
-    let mut cursor_entity_holder = None;
-
+    // Spawn text with 3-span structure for embedded cursor
     commands.entity(entity).with_children(|parent| {
         // Spawn text entity with proper structure
         parent.spawn((
@@ -38,7 +36,7 @@ pub fn init_text_input(
             Name::new("TextInputInner"),
         ))
         .with_children(|text_parent| {
-            // The actual text content goes in a TextSpan child
+            // Pre-cursor text
             text_parent.spawn((
                 TextSpan::new(""),
                 TextFont {
@@ -46,42 +44,39 @@ pub fn init_text_input(
                     ..default()
                 },
                 TextColor(Color::WHITE),
+                Name::new("PreCursor"),
+            ));
+
+            // Cursor character (will be "|" when visible, "" when hidden)
+            text_parent.spawn((
+                TextSpan::new(""),
+                TextFont {
+                    font_size: 14.0,
+                    ..default()
+                },
+                TextColor(Color::WHITE),
+                Name::new("Cursor"),
+            ));
+
+            // Post-cursor text
+            text_parent.spawn((
+                TextSpan::new(""),
+                TextFont {
+                    font_size: 14.0,
+                    ..default()
+                },
+                TextColor(Color::WHITE),
+                Name::new("PostCursor"),
             ));
         });
-
-        // Spawn cursor entity
-        let cursor_entity = parent.spawn((
-            Node {
-                width: Val::Px(2.0),
-                height: Val::Percent(80.0),  // 80% of parent height for better fit
-                position_type: PositionType::Absolute,
-                left: Val::Px(10.0),  // Start with padding offset
-                top: Val::Percent(10.0),  // Center vertically with 10% margin
-                ..default()
-            },
-            BackgroundColor(Color::WHITE),
-            Visibility::Hidden,  // Start hidden until focused
-            ZIndex(100),  // Ensure cursor is above text and background
-            TextInputCursor {
-                input_entity: entity,
-            },
-            Name::new("TextInputCursor"),
-        )).id();
-
-        cursor_entity_holder = Some(cursor_entity);
     });
 
-    // Add the CursorVisual component with the cursor entity reference
-    if let Some(cursor_entity) = cursor_entity_holder {
-        commands.entity(entity).insert(CursorVisual {
-            cursor_entity: Some(cursor_entity),
-            visible: false,  // Start with cursor not visible until focused
-            blink_timer: Timer::from_seconds(0.5, TimerMode::Repeating),
-            style: CursorStyle::Line,
-            selection_entities: Vec::new(),
-        });
-    } else {
-        // Fallback if cursor entity wasn't created for some reason
-        commands.entity(entity).insert(CursorVisual::default());
-    }
+    // Add simplified CursorVisual component (no entity reference needed)
+    commands.entity(entity).insert(CursorVisual {
+        cursor_entity: None,  // No separate cursor entity anymore
+        visible: false,  // Start with cursor not visible until focused
+        blink_timer: Timer::from_seconds(0.5, TimerMode::Repeating),
+        style: CursorStyle::Line,  // Keep for future use
+        selection_entities: Vec::new(),
+    });
 }
