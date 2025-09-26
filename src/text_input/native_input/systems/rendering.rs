@@ -87,22 +87,19 @@ pub fn update_cursor_visual(
     _children_query: Query<&Children>,
 ) {
     for (buffer, cursor_visual, input_visual, children) in text_inputs.iter() {
-        info!("Checking input: focused={}, cursor_entity={:?}, cursor_visible={}",
-            buffer.is_focused, cursor_visual.cursor_entity, cursor_visual.visible);
         if let Some(cursor_entity) = cursor_visual.cursor_entity {
             if let Ok((mut node, mut bg_color, mut visibility)) = cursor_query.get_mut(cursor_entity) {
-                // Update visibility
-                *visibility = if buffer.is_focused && cursor_visual.visible {
-                    Visibility::Inherited
+                // Update visibility - ALWAYS visible for debugging
+                *visibility = Visibility::Inherited;
+
+                // Update color based on focus state for debugging
+                if buffer.is_focused && cursor_visual.visible {
+                    bg_color.0 = Color::srgb(0.0, 1.0, 0.0);  // GREEN when focused and visible
+                } else if buffer.is_focused {
+                    bg_color.0 = Color::srgb(1.0, 1.0, 0.0);  // YELLOW when focused but not visible
                 } else {
-                    Visibility::Hidden
-                };
-
-                info!("Cursor update: entity={:?}, focused={}, visible={}, final_visibility={:?}",
-                    cursor_entity, buffer.is_focused, cursor_visual.visible, *visibility);
-
-                // Update color
-                bg_color.0 = input_visual.cursor_color;
+                    bg_color.0 = Color::srgb(1.0, 0.0, 0.0);  // RED when not focused
+                }
 
                 // Find text layout info (direct child)
                 for child in children.iter() {

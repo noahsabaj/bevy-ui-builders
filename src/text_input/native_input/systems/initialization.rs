@@ -52,15 +52,15 @@ pub fn init_text_input(
         // Spawn cursor entity
         let cursor_entity = parent.spawn((
             Node {
-                width: Val::Px(10.0),  // Make wider for debugging
-                height: Val::Px(30.0),  // Fixed height for debugging
+                width: Val::Px(2.0),
+                height: Val::Px(20.0),  // Fixed height for now
                 position_type: PositionType::Absolute,
-                left: Val::Px(10.0),   // Position 10px from left for debugging
-                top: Val::Px(5.0),      // Position 5px from top for debugging
+                left: Val::Px(10.0),  // Start with padding offset
+                top: Val::Px(8.0),   // Center vertically (assuming ~36px input height)
                 ..default()
             },
-            BackgroundColor(Color::srgb(1.0, 0.0, 0.0)),  // Bright red for debugging
-            Visibility::Inherited,  // Start visible for debugging
+            BackgroundColor(Color::WHITE),
+            Visibility::Hidden,  // Start hidden until focused
             TextInputCursor {
                 input_entity: entity,
             },
@@ -72,7 +72,6 @@ pub fn init_text_input(
 
     // Add the CursorVisual component with the cursor entity reference
     if let Some(cursor_entity) = cursor_entity_holder {
-        info!("Creating CursorVisual for input {:?} with cursor entity {:?}", entity, cursor_entity);
         commands.entity(entity).insert(CursorVisual {
             cursor_entity: Some(cursor_entity),
             visible: false,  // Start with cursor not visible until focused
@@ -82,7 +81,6 @@ pub fn init_text_input(
         });
     } else {
         // Fallback if cursor entity wasn't created for some reason
-        warn!("No cursor entity created for input {:?}", entity);
         commands.entity(entity).insert(CursorVisual::default());
     }
 }
