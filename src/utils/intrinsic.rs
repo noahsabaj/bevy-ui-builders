@@ -7,6 +7,7 @@
 use bevy::prelude::*;
 
 /// Create a node that sizes itself based on content
+#[allow(dead_code)]
 pub fn intrinsic_node() -> Node {
     Node {
         flex_direction: FlexDirection::Column,
@@ -16,6 +17,7 @@ pub fn intrinsic_node() -> Node {
 }
 
 /// Create a scrollable container with intrinsic height
+#[allow(dead_code)]
 pub fn scrollable_container(max_height: Val) -> Node {
     Node {
         flex_direction: FlexDirection::Column,
@@ -26,6 +28,7 @@ pub fn scrollable_container(max_height: Val) -> Node {
 }
 
 /// Create a panel that adapts to content with safety constraints
+#[allow(dead_code)]
 pub fn adaptive_panel(max_width: Val, max_height: Val) -> Node {
     Node {
         flex_direction: FlexDirection::Column,

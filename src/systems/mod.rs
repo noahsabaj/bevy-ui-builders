@@ -9,6 +9,17 @@ pub mod interaction;
 #[allow(unused_imports)]
 pub use cleanup::{despawn_entities, despawn_ui_entities};
 #[allow(unused_imports)]
-pub use hover::HoverPlugin;
-#[allow(unused_imports)]
-pub use interaction::handle_interactions;
+pub use hover::{
+    HoverPlugin,
+    // Components
+    HoverScale,
+    HoverBrightness,
+    HoverOpacity,
+    HoverOutline,
+    HoverColors,
+    OriginalColors,
+    HoverAnimationState,
+    HoverConfig,
+    // Helper functions
+    apply_brightness,
+};

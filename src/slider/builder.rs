@@ -4,6 +4,7 @@ use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
 use crate::button::{ButtonBuilder, ButtonSize, ButtonStyle};
 use crate::styles::{colors, dimensions};
+use crate::systems::hover::{HoverScale, HoverColors};
 use super::types::*;
 
 /// Builder for creating sliders
@@ -151,6 +152,7 @@ impl SliderBuilder {
                 Interaction::default(),
                 RelativeCursorPosition::default(),
                 SliderTrack,
+                // Note: Cursor hover effects not available in Bevy 0.16
             ));
 
             let track_entity = slider_entity.id();
@@ -213,6 +215,15 @@ impl SliderBuilder {
                     BorderColor(colors::BORDER_LIGHT),
                     BorderRadius::all(Val::Px(dimensions::SLIDER_HANDLE_SIZE / 2.0)),
                     SliderHandle,
+                    // Add hover effects for the handle
+                    HoverScale(1.15), // Grow 15% on hover
+                    HoverColors {
+                        normal_bg: colors::PRIMARY,
+                        hover_bg: colors::PRIMARY_HOVER,
+                        normal_border: colors::BORDER_LIGHT,
+                        hover_border: colors::BORDER_FOCUS,
+                    },
+                    Interaction::default(),
                 ));
             });
 

@@ -67,19 +67,8 @@ pub fn despawn_entities<T: Component>(mut commands: Commands, query: Query<Entit
 /// ```
 pub use despawn_entities as despawn_ui_entities;
 
-/// System to despawn entities with a specific component and all their descendants.
-///
-/// This is useful when you have complex UI hierarchies and want to ensure
-/// all child entities are also cleaned up.
-pub fn despawn_with_children<T: Component>(
-    mut commands: Commands,
-    query: Query<Entity, With<T>>,
-) {
-    for entity in &query {
-        // despawn() now automatically handles descendants in Bevy 0.16+
-        commands.entity(entity).despawn();
-    }
-}
+// NOTE: Removed despawn_with_children function as despawn() is now automatically
+// recursive in Bevy 0.16+ - it handles all descendants automatically.
 
 // NOTE: Removed cleanup_orphaned_ui function as it was fundamentally flawed.
 // The query `Query<Entity, (With<Node>, Without<ChildOf>)>` would match ALL root UI entities
@@ -104,7 +93,6 @@ mod tests {
         // This test ensures the generic function compiles correctly
         let _system = despawn_entities::<TestUIRoot>;
         let _alias = despawn_ui_entities::<TestUIRoot>;
-        let _with_children = despawn_with_children::<AnotherRoot>;
     }
 
     #[test]
