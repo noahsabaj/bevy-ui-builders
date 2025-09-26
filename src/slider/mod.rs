@@ -7,7 +7,7 @@ mod systems;
 mod types;
 
 // Public exports only
-pub use builder::SliderBuilder;
+pub use builder::{SliderBuilder, SliderBuilderWithMarker};
 pub use plugin::SliderPlugin;
 pub use types::{
     Slider,

@@ -1,6 +1,6 @@
 [package]
 name = "bevy-ui-builders"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = ["Noah Sabaj <noahsabaj@gmail.com>"]
 description = "Declarative UI builders for Bevy with consistent styling and interaction handling"

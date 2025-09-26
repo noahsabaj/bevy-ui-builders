@@ -75,7 +75,7 @@ pub use button::{
 };
 
 #[cfg(feature = "slider")]
-pub use slider::{SliderBuilder, Slider, SliderHandle, SliderTrack, ValueFormat};
+pub use slider::{SliderBuilder, SliderBuilderWithMarker, Slider, SliderHandle, SliderTrack, ValueFormat};
 
 #[cfg(feature = "form")]
 pub use form::{FormBuilder, FieldType, ValidationRule};

@@ -7,10 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2025-09-26
+
+### Added
+- **SliderBuilder enhancements**:
+  - `with_marker<T: Component>(marker: T)` - Attach custom marker components to sliders
+  - `SliderBuilderWithMarker` struct for type-safe marker attachment
+  - Both `build()` and `build_in()` methods supported on SliderBuilderWithMarker
+
+### Fixed
+- Sliders can now properly be identified in event handlers using marker components
+- Improved type safety for slider event handling
+
 ## [0.1.5] - 2025-09-26
 
 ### Added
-- **ButtonBuilder enhancements** for Living Worlds compatibility:
+- **ButtonBuilder enhancements**:
   - `with_marker<T: Component>(marker: T)` - Attach custom marker components to buttons
   - `build_in(parent: &mut ChildSpawnerCommands)` - Alias for `build()` method
   - `margin(margin: UiRect)` - Set button margins
@@ -24,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `border_color(color: Color)` - Set custom border color
 
 ### Fixed
-- Living Worlds compatibility issues where the library expected methods that weren't published in v0.1.4
+- Missing API methods that were expected but not published in v0.1.4
 - API consistency across all builders with `build_in()` methods
 
 ## [0.1.4] - 2025-09-26

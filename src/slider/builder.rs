@@ -83,6 +83,14 @@ impl SliderBuilder {
         self
     }
 
+    /// Attach a marker component to the slider
+    pub fn with_marker<M: Component>(self, marker: M) -> SliderBuilderWithMarker<M> {
+        SliderBuilderWithMarker {
+            builder: self,
+            marker,
+        }
+    }
+
     /// Build the slider (alias for build)
     pub fn build_in(self, parent: &mut ChildSpawnerCommands) -> Entity {
         self.build(parent)
@@ -280,5 +288,25 @@ impl SliderBuilder {
         });
 
         container
+    }
+}
+
+/// A SliderBuilder with an attached marker component
+pub struct SliderBuilderWithMarker<M: Component> {
+    builder: SliderBuilder,
+    marker: M,
+}
+
+impl<M: Component> SliderBuilderWithMarker<M> {
+    /// Build the slider with the marker component
+    pub fn build(self, parent: &mut ChildSpawnerCommands) -> Entity {
+        let entity = self.builder.build(parent);
+        parent.commands().entity(entity).insert(self.marker);
+        entity
+    }
+
+    /// Build the slider with the marker component (alias for build)
+    pub fn build_in(self, parent: &mut ChildSpawnerCommands) -> Entity {
+        self.build(parent)
     }
 }
