@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8] - 2025-09-27
+
+### Documentation
+- **Comprehensive README update**: Brought documentation up to date with all features through v0.1.7
+  - Added complete ScrollViewBuilder documentation with examples
+  - Fixed incorrect DialogBuilder preset syntax (no `presets::` module exists)
+  - Documented new methods added in v0.1.5-v0.1.7:
+    - ButtonBuilder: `margin()`, `height()`, `enabled()`, `build_in()`
+    - SliderBuilder: `with_format()`, `with_marker()`, `build_in()`
+    - PanelBuilder: `border_color()`, `flex_grow()`, `flex_shrink()`
+    - DialogBuilder: `build_with_buttons()`, `build_and_mark()`
+  - Highlighted native text input features (cursor, selection, clipboard, undo/redo)
+  - Added "What's New" section showcasing recent additions
+  - Updated all version references from "0.1" to appropriate versions
+  - Added missing `cleanup` feature to features list
+  - Updated Complete Example to use ScrollView and password masking
+  - Fixed Bevy version support table
+
+### Changed
+- README now accurately reflects all current APIs and features
+- Documentation examples tested against actual codebase
+
 ## [0.1.7] - 2025-09-27
 
 ### Added
