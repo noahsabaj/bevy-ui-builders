@@ -5,6 +5,9 @@ use crate::button::{ButtonBuilder, ButtonSize};
 use crate::styles::{colors, dimensions, ButtonStyle};
 use crate::relationships::BelongsToDialog;
 use super::types::*;
+use std::collections::HashMap;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 /// Builder for creating dialogs
 pub struct DialogBuilder {
@@ -191,8 +194,60 @@ impl DialogBuilder {
         self
     }
 
+    /// Helper method to build a dialog and add a custom marker to a specific button
+    ///
+    /// # Example
+    /// ```
+    /// DialogBuilder::new(DialogType::Custom)
+    ///     .title("Delete Item")
+    ///     .danger_button("Delete")
+    ///     .cancel_button("Cancel")
+    ///     .build_and_mark(commands, DialogButtonMarker::Confirm, MyCustomMarker);
+    /// ```
+    pub fn build_and_mark<M: Component>(
+        self,
+        commands: &mut Commands,
+        button_marker: DialogButtonMarker,
+        component: M,
+    ) -> Entity {
+        let (dialog, buttons) = self.build_with_buttons(commands);
+        if let Some(button_entity) = buttons.get(&button_marker) {
+            commands.entity(*button_entity).insert(component);
+        }
+        dialog
+    }
+
+
+    /// Build the dialog entity and return button entities
+    ///
+    /// Returns a tuple of (dialog_entity, button_entities) where button_entities
+    /// is a HashMap mapping DialogButtonMarker to Entity for each button created.
+    ///
+    /// # Example
+    /// ```
+    /// let (dialog, buttons) = DialogBuilder::new(DialogType::Custom)
+    ///     .title("Confirm Action")
+    ///     .danger_button("Delete")
+    ///     .cancel_button("Cancel")
+    ///     .build_with_buttons(commands);
+    ///
+    /// // Add custom components to buttons
+    /// if let Some(confirm_btn) = buttons.get(&DialogButtonMarker::Confirm) {
+    ///     commands.entity(*confirm_btn).insert(MyCustomMarker);
+    /// }
+    /// ```
+    pub fn build_with_buttons(self, commands: &mut Commands) -> (Entity, HashMap<DialogButtonMarker, Entity>) {
+        self.build_internal(commands, true)
+    }
+
     /// Build the dialog entity
     pub fn build(self, commands: &mut Commands) -> Entity {
+        let (entity, _) = self.build_internal(commands, false);
+        entity
+    }
+
+    /// Internal build implementation
+    fn build_internal(self, commands: &mut Commands, return_buttons: bool) -> (Entity, HashMap<DialogButtonMarker, Entity>) {
         // Create overlay that blocks clicks
         let overlay_entity = commands
             .spawn((
@@ -239,6 +294,10 @@ impl DialogBuilder {
             }
             DialogType::Custom => {}
         }
+
+        // Track button entities if needed (use RefCell for interior mutability)
+        let button_entities = Rc::new(RefCell::new(HashMap::new()));
+        let button_entities_clone = button_entities.clone();
 
         // Create container with relationship to overlay
         let container_entity = commands
@@ -341,8 +400,13 @@ impl DialogBuilder {
                                 .size(ButtonSize::Medium)
                                 .build(button_row);
 
-                            // Add marker based on type
-                            match button.marker {
+                            // Track button entity if needed
+                            if return_buttons {
+                                button_entities_clone.borrow_mut().insert(button.marker.clone(), button_entity);
+                            }
+
+                            // Add standard marker based on type
+                            match &button.marker {
                                 DialogButtonMarker::Confirm => {
                                     button_row.commands().entity(button_entity).insert(ConfirmButton);
                                 }
@@ -365,7 +429,7 @@ impl DialogBuilder {
                                     button_row.commands().entity(button_entity).insert(NoButton);
                                 }
                                 DialogButtonMarker::Custom(_) => {
-                                    // Custom markers can be added by the user after creation
+                                    // Custom markers can be added by the caller using build_with_buttons()
                                 }
                             }
                         }
@@ -377,7 +441,12 @@ impl DialogBuilder {
         // The BelongsToDialog relationship handles logical grouping and cleanup
         commands.entity(overlay_entity).add_child(container_entity);
 
-        overlay_entity
+        // Extract the HashMap from RefCell
+        let final_button_entities = Rc::try_unwrap(button_entities)
+            .map(|refcell| refcell.into_inner())
+            .unwrap_or_else(|rc| rc.borrow().clone());
+
+        (overlay_entity, final_button_entities)
     }
 }
 

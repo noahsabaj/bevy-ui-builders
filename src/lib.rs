@@ -81,7 +81,15 @@ pub use slider::{SliderBuilder, SliderBuilderWithMarker, Slider, SliderHandle, S
 pub use form::{FormBuilder, FieldType, ValidationRule};
 
 #[cfg(feature = "dialog")]
-pub use dialog::{DialogBuilder, DialogButtonEvent, DialogType, DialogOverlay};
+pub use dialog::{
+    DialogBuilder, DialogButtonEvent, DialogType, DialogOverlay, DialogButtonMarker,
+    // Standard button markers for dialog buttons
+    ConfirmButton, CancelButton, SaveButton, DiscardButton,
+    OkButton, YesButton, NoButton,
+    // Dialog type markers
+    ExitConfirmationDialog, UnsavedChangesDialog, ResolutionDialog,
+    ErrorDialog, InfoDialog, WarningDialog, SuccessDialog
+};
 
 #[cfg(feature = "text_input")]
 pub use text_input::{TextInputBuilder, InputFilter, InputTransform, FocusGroupId, text_input};
@@ -115,7 +123,12 @@ pub mod prelude {
     pub use crate::{FormBuilder, FieldType, ValidationRule};
 
     #[cfg(feature = "dialog")]
-    pub use crate::{DialogBuilder, DialogType};
+    pub use crate::{
+        DialogBuilder, DialogType, DialogButtonMarker,
+        // Standard button markers
+        ConfirmButton, CancelButton, SaveButton, DiscardButton,
+        OkButton, YesButton, NoButton,
+    };
 
     #[cfg(feature = "text_input")]
     pub use crate::{TextInputBuilder, InputFilter};

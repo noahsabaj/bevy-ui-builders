@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2025-09-27
+
+### Added
+- **DialogBuilder custom marker support**: Complete solution for adding custom components to dialog buttons
+  - `build_with_buttons()` - Returns `(Entity, HashMap<DialogButtonMarker, Entity>)` for post-creation modification
+  - `build_and_mark()` - Helper method to add a single custom marker to a specific button
+  - Standard button markers now exported from top-level module for direct use:
+    - `ConfirmButton`, `CancelButton`, `SaveButton`, `DiscardButton`
+    - `OkButton`, `YesButton`, `NoButton`
+  - Dialog type markers exported for type-specific handling:
+    - `ExitConfirmationDialog`, `UnsavedChangesDialog`, `ResolutionDialog`
+    - `ErrorDialog`, `InfoDialog`, `WarningDialog`, `SuccessDialog`
+  - New example `dialog_custom_markers.rs` demonstrating all usage patterns
+  - `DialogButtonMarker` now derives `Clone`, `Hash`, `PartialEq`, `Eq` for HashMap usage
+
+### Fixed
+- Living Worlds integration issue where custom marker components couldn't be added to dialog buttons
+- Dialog buttons can now be queried with both standard and custom markers
+- Full backward compatibility maintained - existing DialogBuilder code continues to work
+
 ## [0.1.6] - 2025-09-26
 
 ### Added

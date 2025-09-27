@@ -106,6 +106,7 @@ pub struct DialogButton {
 }
 
 /// Marker types for dialog buttons
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum DialogButtonMarker {
     Confirm,
     Cancel,
