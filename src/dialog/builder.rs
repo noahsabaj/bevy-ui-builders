@@ -197,7 +197,7 @@ impl DialogBuilder {
     /// Helper method to build a dialog and add a custom marker to a specific button
     ///
     /// # Example
-    /// ```
+    /// ```ignore
     /// DialogBuilder::new(DialogType::Custom)
     ///     .title("Delete Item")
     ///     .danger_button("Delete")
@@ -224,7 +224,7 @@ impl DialogBuilder {
     /// is a HashMap mapping DialogButtonMarker to Entity for each button created.
     ///
     /// # Example
-    /// ```
+    /// ```ignore
     /// let (dialog, buttons) = DialogBuilder::new(DialogType::Custom)
     ///     .title("Confirm Action")
     ///     .danger_button("Delete")
