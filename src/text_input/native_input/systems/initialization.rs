@@ -10,8 +10,21 @@ use super::super::types::CursorStyle;
 pub fn init_text_input(
     trigger: Trigger<OnAdd, NativeTextInput>,
     mut commands: Commands,
+    text_buffer_query: Query<(&TextBuffer, &TextInputVisual)>,
 ) {
     let entity = trigger.target();
+
+    // Read initial values if they exist (set by builder)
+    let (initial_content, initial_font_size, initial_color) =
+        if let Ok((buffer, visual)) = text_buffer_query.get(entity) {
+            (
+                buffer.content.clone(),
+                visual.font.font_size,
+                visual.text_color,
+            )
+        } else {
+            (String::new(), 14.0, Color::WHITE)
+        };
 
     // Add default components if not present (except CursorVisual which needs cursor entity)
     commands.entity(entity).try_insert((
@@ -36,14 +49,14 @@ pub fn init_text_input(
             Name::new("TextInputInner"),
         ))
         .with_children(|text_parent| {
-            // Pre-cursor text
+            // Pre-cursor text (initialize with content from TextBuffer if available)
             text_parent.spawn((
-                TextSpan::new(""),
+                TextSpan::new(initial_content),
                 TextFont {
-                    font_size: 14.0,
+                    font_size: initial_font_size,
                     ..default()
                 },
-                TextColor(Color::WHITE),
+                TextColor(initial_color),
                 Name::new("PreCursor"),
             ));
 
@@ -51,7 +64,7 @@ pub fn init_text_input(
             text_parent.spawn((
                 TextSpan::new(""),
                 TextFont {
-                    font_size: 14.0,
+                    font_size: initial_font_size,
                     ..default()
                 },
                 TextColor(Color::WHITE),
@@ -62,10 +75,10 @@ pub fn init_text_input(
             text_parent.spawn((
                 TextSpan::new(""),
                 TextFont {
-                    font_size: 14.0,
+                    font_size: initial_font_size,
                     ..default()
                 },
-                TextColor(Color::WHITE),
+                TextColor(initial_color),
                 Name::new("PostCursor"),
             ));
         });

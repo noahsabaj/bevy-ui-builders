@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.9] - 2025-09-30
+
+### Fixed
+- **TextInputBuilder initial value rendering**: Fixed bug where `.with_value("text")` would store the value internally but not render it visually on initial spawn. Text inputs now correctly display their initial value immediately instead of appearing empty until the first user interaction.
+
 ## [0.1.8] - 2025-09-27
 
 ### Documentation

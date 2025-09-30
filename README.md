@@ -433,7 +433,7 @@ Control which builders are included:
 bevy-ui-builders = "0.1"
 
 # Or pick specific builders
-bevy-ui-builders = { version = "0.1.7", default-features = false, features = ["button", "dialog"] }
+bevy-ui-builders = { version = "0.1", default-features = false, features = ["button", "dialog"] }
 ```
 
 Available features:
