@@ -10,7 +10,7 @@ mod cursor;
 mod focus_visual;
 
 // Re-export all public systems
-pub use initialization::init_text_input;
+pub use initialization::{init_text_input, sync_initial_text_content};
 pub use io::keyboard::{handle_keyboard_input, handle_tab_navigation};
 pub use io::mouse::{handle_mouse_input, handle_mouse_drag, handle_click_outside};
 pub use rendering::{render_text, render_selection};

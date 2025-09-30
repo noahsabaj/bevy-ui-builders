@@ -6,32 +6,17 @@ use bevy::ui::{FocusPolicy, RelativeCursorPosition};
 use super::super::components::*;
 use super::super::types::CursorStyle;
 
-/// Initialize text input when spawned
+/// Initialize text input when spawned (observer for initial setup)
 pub fn init_text_input(
     trigger: Trigger<OnAdd, NativeTextInput>,
     mut commands: Commands,
-    text_buffer_query: Query<(&TextBuffer, &TextInputVisual)>,
 ) {
     let entity = trigger.target();
 
-    // Read initial values if they exist (set by builder)
-    let (initial_content, initial_font_size, initial_color) =
-        if let Ok((buffer, visual)) = text_buffer_query.get(entity) {
-            (
-                buffer.content.clone(),
-                visual.font.font_size,
-                visual.text_color,
-            )
-        } else {
-            (String::new(), 14.0, Color::WHITE)
-        };
-
-    // Add default components if not present (except CursorVisual which needs cursor entity)
+    // Add default components if not present
+    // Note: TextBuffer and TextInputVisual are set by builder, don't override
     commands.entity(entity).try_insert((
-        TextBuffer::default(),
         SelectionState::default(),
-        TextInputVisual::default(),
-        // CursorVisual will be added after cursor entity is created
         ScrollViewport::default(),
         UndoHistory::default(),
         TextInputSettings::default(),
@@ -40,33 +25,27 @@ pub fn init_text_input(
         RelativeCursorPosition::default(),
     ));
 
-    // Spawn text with 3-span structure for embedded cursor
+    // Spawn text container with 3-span structure for embedded cursor
+    // Initial content will be set by sync_initial_text_content system
     commands.entity(entity).with_children(|parent| {
-        // Spawn text entity with proper structure
         parent.spawn((
-            Text::default(),  // Parent Text component
+            Text::default(),
             TextInputInner,
             Name::new("TextInputInner"),
         ))
         .with_children(|text_parent| {
-            // Pre-cursor text (initialize with content from TextBuffer if available)
+            // Pre-cursor text (will be populated by sync system)
             text_parent.spawn((
-                TextSpan::new(initial_content),
-                TextFont {
-                    font_size: initial_font_size,
-                    ..default()
-                },
-                TextColor(initial_color),
+                TextSpan::new(""),
+                TextFont::default(),
+                TextColor(Color::WHITE),
                 Name::new("PreCursor"),
             ));
 
-            // Cursor character (will be "|" when visible, "" when hidden)
+            // Cursor character
             text_parent.spawn((
                 TextSpan::new(""),
-                TextFont {
-                    font_size: initial_font_size,
-                    ..default()
-                },
+                TextFont::default(),
                 TextColor(Color::WHITE),
                 Name::new("Cursor"),
             ));
@@ -74,22 +53,64 @@ pub fn init_text_input(
             // Post-cursor text
             text_parent.spawn((
                 TextSpan::new(""),
-                TextFont {
-                    font_size: initial_font_size,
-                    ..default()
-                },
-                TextColor(initial_color),
+                TextFont::default(),
+                TextColor(Color::WHITE),
                 Name::new("PostCursor"),
             ));
         });
     });
 
-    // Add simplified CursorVisual component (no entity reference needed)
+    // Add CursorVisual component
     commands.entity(entity).insert(CursorVisual {
-        cursor_entity: None,  // No separate cursor entity anymore
-        visible: false,  // Start with cursor not visible until focused
+        cursor_entity: None,
+        visible: false,
         blink_timer: Timer::from_seconds(0.5, TimerMode::Repeating),
-        style: CursorStyle::Line,  // Keep for future use
+        style: CursorStyle::Line,
         selection_entities: Vec::new(),
     });
+}
+
+/// System that runs once to sync initial TextBuffer content to visual TextSpans
+/// This runs after all components are guaranteed to be present
+pub fn sync_initial_text_content(
+    text_inputs: Query<
+        (&TextBuffer, &TextInputVisual, &Children),
+        (Added<CursorVisual>, With<NativeTextInput>)
+    >,
+    text_inner_query: Query<&Children, With<TextInputInner>>,
+    mut text_span_query: Query<(&mut TextSpan, &mut TextFont, &mut TextColor)>,
+) {
+    for (buffer, visual, children) in &text_inputs {
+        // Find TextInputInner entity
+        for child in children.iter() {
+            if let Ok(text_spans) = text_inner_query.get(child) {
+                let text_spans_vec: Vec<Entity> = text_spans.iter().collect();
+
+                if text_spans_vec.len() >= 3 {
+                    // Initialize pre-cursor span with initial content
+                    if let Ok((mut span, mut font, mut color)) = text_span_query.get_mut(text_spans_vec[0]) {
+                        *span = TextSpan::new(buffer.content.clone());
+                        *font = visual.font.clone();
+                        color.0 = if buffer.content.is_empty() {
+                            visual.placeholder_color
+                        } else {
+                            visual.text_color
+                        };
+                    }
+
+                    // Initialize cursor span with correct font
+                    if let Ok((_, mut font, _)) = text_span_query.get_mut(text_spans_vec[1]) {
+                        *font = visual.font.clone();
+                    }
+
+                    // Initialize post-cursor span with correct font/color
+                    if let Ok((_, mut font, mut color)) = text_span_query.get_mut(text_spans_vec[2]) {
+                        *font = visual.font.clone();
+                        color.0 = visual.text_color;
+                    }
+                }
+                break;
+            }
+        }
+    }
 }

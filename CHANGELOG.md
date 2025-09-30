@@ -7,10 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.10] - 2025-09-30
+
+### Fixed
+- **TextInputBuilder initial value rendering (proper fix)**: Fixed observer timing issue where querying components during `OnAdd` could fail, causing initial values to not render. Split initialization into two phases:
+  1. Observer spawns child TextSpan entities with empty content
+  2. New `sync_initial_text_content` system (triggered by `Added<CursorVisual>`) syncs TextBuffer content to TextSpans once all components are guaranteed to be present
+- This ensures `.with_value("text")` always displays the initial value, and programmatic updates to `TextBuffer` are properly rendered by the existing `render_text` system
+
+### Technical Details
+The v0.1.9 fix attempted to query TextBuffer in the observer, but Bevy 0.16 observers may not reliably access other components in the spawn bundle during `OnAdd` execution. v0.1.10 uses a deferred initialization pattern that waits for all components to be present before syncing initial content.
+
 ## [0.1.9] - 2025-09-30
 
 ### Fixed
-- **TextInputBuilder initial value rendering**: Fixed bug where `.with_value("text")` would store the value internally but not render it visually on initial spawn. Text inputs now correctly display their initial value immediately instead of appearing empty until the first user interaction.
+- **TextInputBuilder initial value rendering (incomplete fix)**: Attempted to fix initial value rendering by querying TextBuffer in the observer, but this was unreliable due to observer timing issues. See v0.1.10 for the proper fix.
 
 ## [0.1.8] - 2025-09-27
 

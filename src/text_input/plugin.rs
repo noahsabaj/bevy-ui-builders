@@ -15,6 +15,9 @@ define_plugin!(TextInputPlugin {
         app.add_observer(init_text_input);
     },
     update: [
+        // Initial sync system - runs once when text input is fully initialized
+        sync_initial_text_content,
+
         // Native input systems
         handle_keyboard_input,
         handle_tab_navigation,

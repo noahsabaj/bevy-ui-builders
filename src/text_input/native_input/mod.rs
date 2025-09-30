@@ -45,6 +45,7 @@ pub use events::{
 // System exports for plugin registration
 pub use systems::{
     init_text_input,
+    sync_initial_text_content,
     handle_keyboard_input,
     handle_mouse_input,
     handle_mouse_drag,
