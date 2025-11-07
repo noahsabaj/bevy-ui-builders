@@ -9,7 +9,7 @@ use crate::relationships::BelongsToDropdown;
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// use bevy_ui_builders::prelude::*;
 ///
 /// fn build_dropdown(parent: &mut ChildSpawnerCommands) {

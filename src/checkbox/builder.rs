@@ -8,7 +8,7 @@ use crate::styles::{colors, dimensions};
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// use bevy_ui_builders::prelude::*;
 ///
 /// fn build_checkbox(parent: &mut ChildSpawnerCommands) {

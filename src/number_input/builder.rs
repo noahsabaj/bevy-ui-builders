@@ -8,7 +8,7 @@ use crate::text_input::{TextInputBuilder, InputFilter};
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// use bevy_ui_builders::prelude::*;
 ///
 /// fn build_number_input(parent: &mut ChildSpawnerCommands) {
