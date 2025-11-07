@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-11-04
+
+### Breaking Changes
+- **Migrated to Bevy 0.17**: This version requires Bevy 0.17 and is not compatible with earlier versions
+  - Updated event system: `EventWriter`/`EventReader` → `MessageWriter`/`MessageReader`
+  - Updated `BorderColor` API: `BorderColor(color)` → `BorderColor::all(color)`
+  - Updated `BorderColor` field access: `border_color.0` → `BorderColor::all()` for assignments
+  - Updated `RelativeCursorPosition` coordinate system: center-based `[-0.5, 0.5]` instead of corner-based `[0.0, 1.0]`
+
+### Fixed
+- **Slider cursor offset**: Fixed 50% offset issue where slider handle appeared left of cursor position
+  - Bevy 0.17 changed `RelativeCursorPosition.normalized` from corner-based to center-based coordinates
+  - Updated slider drag calculation to convert coordinates: `(cursor_pos.x + 0.5)`
+- **Button visual feedback**: Fixed missing hover/pressed state visual changes
+  - `UiBuilderPlugin` now conditionally adds `DefaultPickingPlugins` if not already present
+  - Prevents duplicate plugin errors when using with `DefaultPlugins`
+  - Added `Pickable::IGNORE` to all button text children to prevent them from blocking pointer events
+  - This fixes the issue where hovering over button text would not trigger hover/press visual feedback
+  - Bevy 0.17 requires picking system to be active for `Interaction` component updates
+
+### Changed
+- Bumped bevy dependency from 0.16 to 0.17
+- Added `bevy_picking` and `bevy_log` features to enable required functionality
+- Updated all internal usage of event system APIs to use Messages
+- Updated all BorderColor instantiations to use the new `::all()` constructor
+- Updated version to 0.2.0 to reflect breaking API changes
+
+### Technical Notes
+- The migration maintains full feature parity with v0.1.10
+- All existing builder patterns continue to work unchanged from the user's perspective
+- Internal implementation updated to comply with Bevy 0.17 APIs
+- `UiBuilderPlugin` now includes `DefaultPickingPlugins` automatically
+
 ## [0.1.10] - 2025-09-30
 
 ### Fixed

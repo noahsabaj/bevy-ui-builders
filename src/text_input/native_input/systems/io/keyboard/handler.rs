@@ -20,7 +20,7 @@ use super::super::super::super::types::TabBehavior;
 
 /// Handle keyboard input for text editing
 pub fn handle_keyboard_input(
-    mut keyboard_events: EventReader<KeyboardInput>,
+    mut keyboard_events: MessageReader<KeyboardInput>,
     mut text_inputs: Query<(
         Entity,
         &mut TextBuffer,
@@ -30,8 +30,8 @@ pub fn handle_keyboard_input(
         &TextInputSettings,
     ), With<NativeTextInput>>,
     keyboard: Res<ButtonInput<KeyCode>>,
-    mut submit_events: EventWriter<TextInputSubmitEvent>,
-    mut change_events: EventWriter<TextInputChangeEvent>,
+    mut submit_events: MessageWriter<TextInputSubmitEvent>,
+    mut change_events: MessageWriter<TextInputChangeEvent>,
 ) {
     for event in keyboard_events.read() {
         // Only handle key press events
@@ -92,7 +92,7 @@ pub fn handle_keyboard_input(
             }
 
             // Emit change event
-            change_events.send(TextInputChangeEvent {
+            change_events.write(TextInputChangeEvent {
                 entity,
                 text: buffer.content.clone(),
             });

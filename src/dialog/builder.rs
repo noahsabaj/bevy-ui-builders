@@ -316,7 +316,7 @@ impl DialogBuilder {
                     ..default()
                 },
                 BackgroundColor(colors::BACKGROUND_SECONDARY),
-                BorderColor(colors::BORDER_DEFAULT),
+                BorderColor::all(colors::BORDER_DEFAULT),
                 BorderRadius::all(Val::Px(dimensions::BORDER_RADIUS_LARGE)),
                 DialogContainer {
                     dialog_type: self.dialog_type,

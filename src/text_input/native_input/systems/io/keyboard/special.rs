@@ -14,11 +14,11 @@ pub fn handle_enter(
     selection: &mut SelectionState,
     settings: &TextInputSettings,
     history: &mut super::super::super::super::components::UndoHistory,
-    submit_events: &mut EventWriter<TextInputSubmitEvent>,
+    submit_events: &mut MessageWriter<TextInputSubmitEvent>,
 ) {
     if !settings.multiline {
         // Submit
-        submit_events.send(TextInputSubmitEvent {
+        submit_events.write(TextInputSubmitEvent {
             entity,
             text: buffer.content.clone(),
         });

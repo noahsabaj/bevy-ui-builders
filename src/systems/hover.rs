@@ -226,16 +226,16 @@ pub fn universal_hover_outline(
                     if original.is_none() {
                         commands.entity(entity).insert(OriginalColors {
                             background: Color::NONE,
-                            border: border_color.0,
+                            border: border_color.top,  // Store one side as representative
                         });
                     }
-                    border_color.0 = outline.color;
+                    *border_color = BorderColor::all(outline.color);
                     // Note: Border width would need to be set on Node component at spawn time
                 }
             }
             Interaction::None => {
                 if let Some(orig) = original {
-                    border_color.0 = orig.border;
+                    *border_color = BorderColor::all(orig.border);
                 }
             }
         }
@@ -275,11 +275,11 @@ pub fn animate_hover_transitions(
                     hover_colors.hover_bg,
                     animation.current_blend,
                 );
-                border_color.0 = lerp_color(
+                *border_color = BorderColor::all(lerp_color(
                     hover_colors.normal_border,
                     hover_colors.hover_border,
                     animation.current_blend,
-                );
+                ));
             }
         }
 
@@ -344,7 +344,7 @@ pub fn apply_brightness(color: Color, brightness: f32) -> Color {
 // PLUGIN
 // ============================================================================
 
-/// Plugin that adds universal hover effect systems for all UI elements
+// Plugin that adds universal hover effect systems for all UI elements
 define_plugin!(HoverPlugin {
     custom_init: |app: &mut App| {
         app.insert_resource(HoverConfig::default());

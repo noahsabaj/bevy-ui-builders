@@ -18,27 +18,39 @@ fn setup(mut commands: Commands) {
     // Camera
     commands.spawn(Camera2d);
 
-    // Root node
+    // Root container
     commands
         .spawn(Node {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
-            padding: UiRect::all(Val::Px(40.0)),
-            flex_direction: FlexDirection::Row,
-            justify_content: JustifyContent::SpaceEvenly,
-            align_items: AlignItems::Start,
-            column_gap: Val::Px(40.0),
             ..default()
         })
-        .with_children(|parent| {
-            // Login Form
-            create_login_form(parent);
+        .with_children(|root| {
+            // Wrap everything in a ScrollView
+            ScrollViewBuilder::new()
+                .width(Val::Percent(100.0))
+                .height(Val::Percent(100.0))
+                .scrollbar_visibility(crate::scroll_view::ScrollbarVisibility::AutoHide { timeout_secs: 2.0 })
+                .build_with_children(root, |scroll_content| {
+                    // Forms container
+                    scroll_content.spawn(Node {
+                        padding: UiRect::all(Val::Px(40.0)),
+                        flex_direction: FlexDirection::Row,
+                        justify_content: JustifyContent::SpaceEvenly,
+                        align_items: AlignItems::Start,
+                        column_gap: Val::Px(40.0),
+                        ..default()
+                    }).with_children(|parent| {
+                        // Login Form
+                        create_login_form(parent);
 
-            // Registration Form
-            create_registration_form(parent);
+                        // Registration Form
+                        create_registration_form(parent);
 
-            // Settings Form
-            create_settings_form(parent);
+                        // Settings Form
+                        create_settings_form(parent);
+                    });
+                });
         });
 }
 

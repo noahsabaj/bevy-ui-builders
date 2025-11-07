@@ -7,9 +7,10 @@ mod plugin;
 mod systems;
 
 // Public exports
-pub use builder::{ScrollViewBuilder, scroll_view};
+pub use builder::{ScrollViewBuilder, scroll_view, ScrollbarThumb};
 pub use types::{
-    ScrollView, ScrollConfig, ScrollDirection, ScrollState,
-    ScrollBarTrack, ScrollBarThumb, ScrollIndicator, IndicatorPosition
+    ScrollView, ScrollConfig, ScrollDirection, ScrollbarVisibility,
+    ScrollbarState, KineticScrollState, DragScrollTarget,
+    ScrollIndicator, IndicatorPosition
 };
 pub use plugin::ScrollViewPlugin;

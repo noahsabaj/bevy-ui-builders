@@ -31,11 +31,11 @@ pub fn handle_hover_brightness(
         match interaction {
             Interaction::Hovered => {
                 bg_color.0 = apply_brightness(original.background, hover_brightness.0);
-                border_color.0 = apply_brightness(original.border, hover_brightness.0);
+                *border_color = BorderColor::all(apply_brightness(original.border, hover_brightness.0));
             }
             _ => {
                 bg_color.0 = original.background;
-                border_color.0 = original.border;
+                *border_color = BorderColor::all(original.border);
             }
         }
     }
@@ -118,7 +118,7 @@ pub fn animate_button_transitions(
             };
 
             bg_color.0 = target_bg;
-            border_color.0 = target_border;
+            *border_color = BorderColor::all(target_border);
         }
     }
 }

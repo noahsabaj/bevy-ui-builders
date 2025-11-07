@@ -3,6 +3,10 @@
 use bevy::prelude::*;
 use super::types::*;
 
+/// Marker component for scrollbar thumbs
+#[derive(Component, Debug, Clone, Default)]
+pub struct ScrollbarThumb;
+
 /// Builder for creating scrollable containers with responsive sizing
 pub struct ScrollViewBuilder {
     width: Val,
@@ -100,9 +104,49 @@ impl ScrollViewBuilder {
         self
     }
 
-    /// Show/hide scroll indicators
+    /// Set scrollbar visibility mode
+    pub fn scrollbar_visibility(mut self, visibility: ScrollbarVisibility) -> Self {
+        self.config.scrollbar_visibility = visibility;
+        self
+    }
+
+    /// Enable/disable drag-to-scroll
+    pub fn enable_drag_scroll(mut self, enabled: bool) -> Self {
+        self.config.enable_drag_scroll = enabled;
+        self
+    }
+
+    /// Enable/disable kinetic scrolling
+    pub fn enable_kinetic_scroll(mut self, enabled: bool) -> Self {
+        self.config.enable_kinetic_scroll = enabled;
+        self
+    }
+
+    /// Set scroll sensitivity multiplier
+    pub fn scroll_sensitivity(mut self, sensitivity: f32) -> Self {
+        self.config.scroll_sensitivity = sensitivity;
+        self
+    }
+
+    /// Set scrollbar width in pixels
+    pub fn scrollbar_width(mut self, width: f32) -> Self {
+        self.config.scrollbar_width = width;
+        self
+    }
+
+    /// Set minimum scrollbar thumb length in pixels
+    pub fn min_thumb_length(mut self, length: f32) -> Self {
+        self.config.min_thumb_length = length;
+        self
+    }
+
+    /// Show/hide scroll indicators (deprecated - use scrollbar_visibility instead)
     pub fn show_indicators(mut self, show: bool) -> Self {
-        self.config.show_indicators = show;
+        self.config.scrollbar_visibility = if show {
+            ScrollbarVisibility::AutoHide { timeout_secs: 2.0 }
+        } else {
+            ScrollbarVisibility::Never
+        };
         self
     }
 
@@ -126,8 +170,13 @@ impl ScrollViewBuilder {
             ScrollDirection::Both => (FlexDirection::Column, self.gap, self.gap),
         };
 
-        let show_indicators = self.config.show_indicators;
-        let container = parent.spawn((
+        let show_scrollbar = self.config.scrollbar_visibility != ScrollbarVisibility::Never;
+        let enable_drag = self.config.enable_drag_scroll;
+        let enable_kinetic = self.config.enable_kinetic_scroll;
+        let scrollbar_width = self.config.scrollbar_width;
+        let min_thumb_length = self.config.min_thumb_length;
+
+        let mut container_bundle = (
             Node {
                 width: self.width,
                 height: self.height,
@@ -144,33 +193,47 @@ impl ScrollViewBuilder {
             },
             BackgroundColor(self.background_color),
             ScrollView,
-            ScrollState::default(),
+            ScrollPosition::default(),
             self.config,
-        )).id();
+            Interaction::default(), // Required for hover detection in scroll systems
+        );
 
-        // Add visual scrollbar if indicators are enabled
-        if show_indicators && self.direction != ScrollDirection::Horizontal {
+        let container = parent.spawn(container_bundle).id();
+
+        // Add drag-to-scroll capability if enabled
+        if enable_drag {
+            parent.commands().entity(container).insert(DragScrollTarget);
+        }
+
+        // Add kinetic scrolling state if enabled
+        if enable_kinetic {
+            parent.commands().entity(container).insert(KineticScrollState::default());
+        }
+
+        // Add visual scrollbar if not Never visibility
+        if show_scrollbar && self.direction != ScrollDirection::Horizontal {
             parent.spawn((
                 Node {
                     position_type: PositionType::Absolute,
                     right: Val::Px(4.0),
                     top: Val::Px(4.0),
                     bottom: Val::Px(4.0),
-                    width: Val::Px(8.0),
+                    width: Val::Px(scrollbar_width),
                     ..default()
                 },
                 BackgroundColor(Color::srgba(1.0, 1.0, 1.0, 0.1)),
-                ScrollBarTrack,
-            )).with_children(|track| {
-                track.spawn((
+                ScrollbarState::new(container),
+            )).with_children(|scrollbar| {
+                scrollbar.spawn((
                     Node {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(20.0), // Will be dynamically sized
+                        height: Val::Percent(20.0), // Dynamically updated by Bevy
                         ..default()
                     },
                     BackgroundColor(Color::srgba(1.0, 1.0, 1.0, 0.3)),
-                    ScrollBarThumb { scroll_container: container },
-                    Visibility::Hidden, // Hidden initially
+                    BorderRadius::all(Val::Px(scrollbar_width / 2.0)),
+                    ScrollbarThumb,
+                    Interaction::default(), // Required for drag detection
                 ));
             });
         }
@@ -195,7 +258,12 @@ impl ScrollViewBuilder {
             ScrollDirection::Both => (FlexDirection::Column, self.gap, self.gap),
         };
 
-        let show_indicators = self.config.show_indicators;
+        let show_scrollbar = self.config.scrollbar_visibility != ScrollbarVisibility::Never;
+        let enable_drag = self.config.enable_drag_scroll;
+        let enable_kinetic = self.config.enable_kinetic_scroll;
+        let scrollbar_width = self.config.scrollbar_width;
+        let min_thumb_length = self.config.min_thumb_length;
+
         let container = parent
             .spawn((
                 Node {
@@ -214,35 +282,47 @@ impl ScrollViewBuilder {
                 },
                 BackgroundColor(self.background_color),
                 ScrollView,
-                ScrollState::default(),
+                ScrollPosition::default(),
                 self.config,
+                Interaction::default(), // Required for hover detection in scroll systems
             ))
             .with_children(children_fn)
             .id();
 
-        // Add visual scrollbar if indicators are enabled
-        if show_indicators && self.direction != ScrollDirection::Horizontal {
+        // Add drag-to-scroll capability if enabled
+        if enable_drag {
+            parent.commands().entity(container).insert(DragScrollTarget);
+        }
+
+        // Add kinetic scrolling state if enabled
+        if enable_kinetic {
+            parent.commands().entity(container).insert(KineticScrollState::default());
+        }
+
+        // Add visual scrollbar if not Never visibility
+        if show_scrollbar && self.direction != ScrollDirection::Horizontal {
             parent.spawn((
                 Node {
                     position_type: PositionType::Absolute,
                     right: Val::Px(4.0),
                     top: Val::Px(4.0),
                     bottom: Val::Px(4.0),
-                    width: Val::Px(8.0),
+                    width: Val::Px(scrollbar_width),
                     ..default()
                 },
                 BackgroundColor(Color::srgba(1.0, 1.0, 1.0, 0.1)),
-                ScrollBarTrack,
-            )).with_children(|track| {
-                track.spawn((
+                ScrollbarState::new(container),
+            )).with_children(|scrollbar| {
+                scrollbar.spawn((
                     Node {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(20.0), // Will be dynamically sized
+                        height: Val::Percent(20.0), // Dynamically updated by Bevy
                         ..default()
                     },
                     BackgroundColor(Color::srgba(1.0, 1.0, 1.0, 0.3)),
-                    ScrollBarThumb { scroll_container: container },
-                    Visibility::Hidden, // Hidden initially
+                    BorderRadius::all(Val::Px(scrollbar_width / 2.0)),
+                    ScrollbarThumb,
+                    Interaction::default(), // Required for drag detection
                 ));
             });
         }

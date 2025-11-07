@@ -226,7 +226,7 @@ where
         })
         .with_child((
             BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.5)),
-            BorderColor(Color::srgba(0.3, 0.3, 0.3, 0.5)),
+            BorderColor::all(Color::srgba(0.3, 0.3, 0.3, 0.5)),
         ))
         .with_children(|section| {
             // Section title

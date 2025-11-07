@@ -244,7 +244,7 @@ impl PanelBuilder {
                 ..default()
             },
             BackgroundColor(background_color),
-            BorderColor(border_color),
+            BorderColor::all(border_color),
             Panel { style: self.style },
         ));
 
@@ -303,7 +303,7 @@ impl PanelBuilder {
                     ..default()
                 },
                 BackgroundColor(background_color),
-                BorderColor(self.style.border_color()),
+                BorderColor::all(self.style.border_color()),
                 Panel { style: self.style },
             ))
             .with_children(|parent| {

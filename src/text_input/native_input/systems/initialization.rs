@@ -8,10 +8,10 @@ use super::super::types::CursorStyle;
 
 /// Initialize text input when spawned (observer for initial setup)
 pub fn init_text_input(
-    trigger: Trigger<OnAdd, NativeTextInput>,
+    trigger: On<Add, NativeTextInput>,
     mut commands: Commands,
 ) {
-    let entity = trigger.target();
+    let entity = trigger.entity;
 
     // Add default components if not present
     // Note: TextBuffer and TextInputVisual are set by builder, don't override

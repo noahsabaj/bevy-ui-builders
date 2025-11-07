@@ -1,6 +1,6 @@
 [package]
 name = "bevy-ui-builders"
-version = "0.1.10"
+version = "0.2.0"
 edition = "2021"
 authors = ["Noah Sabaj <noahsabaj@gmail.com>"]
 description = "Declarative UI builders for Bevy with consistent styling and interaction handling"
@@ -12,22 +12,24 @@ categories = ["game-development", "gui"]
 readme = "README.md"
 
 [dependencies]
-bevy-plugin-builder = "0.1.2"
-bevy = { version = "0.16", default-features = false, features = [
+bevy-plugin-builder = "0.2.0"
+bevy = { version = "0.17", default-features = false, features = [
     "bevy_ui",
     "bevy_text",
     "bevy_sprite",
     "bevy_color",
+    "bevy_picking",
+    "bevy_log",
     "default_font"
 ] }
 arboard = "3.4"
 
 [dev-dependencies]
-bevy = "0.16"
+bevy = "0.17"
 
 [features]
 default = ["all_builders"]
-all_builders = ["button", "slider", "dialog", "text_input", "panel", "form", "progress", "label", "separator"]
+all_builders = ["button", "slider", "dialog", "text_input", "panel", "form", "progress", "label", "separator", "checkbox", "number_input", "dropdown"]
 button = []
 slider = []
 dialog = []
@@ -37,6 +39,9 @@ form = []
 progress = []
 label = []
 separator = []
+checkbox = []
+number_input = ["text_input"]
+dropdown = []
 cleanup = []
 
 [[example]]
@@ -57,7 +62,7 @@ required-features = ["text_input"]
 
 [[example]]
 name = "form_complete"
-required-features = ["form"]
+required-features = ["form", "button", "text_input", "slider", "checkbox", "number_input", "dropdown"]
 
 [[example]]
 name = "progress_bars"

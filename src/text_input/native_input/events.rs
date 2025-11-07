@@ -3,7 +3,7 @@
 use bevy::prelude::*;
 
 /// Event triggered when text input is submitted (Enter key)
-#[derive(Event)]
+#[derive(Message)]
 pub struct TextInputSubmitEvent {
     /// Entity that triggered the submit
     pub entity: Entity,
@@ -12,7 +12,7 @@ pub struct TextInputSubmitEvent {
 }
 
 /// Event triggered when text input content changes
-#[derive(Event)]
+#[derive(Message)]
 pub struct TextInputChangeEvent {
     /// Entity that changed
     pub entity: Entity,

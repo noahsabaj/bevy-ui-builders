@@ -13,10 +13,10 @@ pub fn update_focus_visual(
 ) {
     for (buffer, mut border_color) in text_inputs.iter_mut() {
         // Apply focus border color when focused, normal border when not
-        border_color.0 = if buffer.is_focused {
+        *border_color = BorderColor::all(if buffer.is_focused {
             colors::BORDER_FOCUS  // Blue border when focused
         } else {
             colors::BORDER_DEFAULT  // Default border when not focused
-        };
+        });
     }
 }

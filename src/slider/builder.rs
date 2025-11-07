@@ -61,7 +61,7 @@ impl SliderBuilder {
     }
 
     /// Set the value format (alias for format)
-    pub fn with_format(mut self, format: ValueFormat) -> Self {
+    pub fn with_format(self, format: ValueFormat) -> Self {
         self.format(format)
     }
 
@@ -158,9 +158,12 @@ impl SliderBuilder {
                 Node {
                     width: Val::Percent(100.0),
                     height: Val::Px(dimensions::SLIDER_TRACK_HEIGHT + dimensions::SLIDER_HANDLE_SIZE),
-                    padding: UiRect::vertical(Val::Px(
-                        (dimensions::SLIDER_HANDLE_SIZE - dimensions::SLIDER_TRACK_HEIGHT) / 2.0
-                    )),
+                    padding: UiRect {
+                        left: Val::Px(dimensions::SLIDER_HANDLE_SIZE / 2.0),  // Half handle width
+                        right: Val::Px(dimensions::SLIDER_HANDLE_SIZE / 2.0), // Half handle width
+                        top: Val::Px((dimensions::SLIDER_HANDLE_SIZE - dimensions::SLIDER_TRACK_HEIGHT) / 2.0),
+                        bottom: Val::Px((dimensions::SLIDER_HANDLE_SIZE - dimensions::SLIDER_TRACK_HEIGHT) / 2.0),
+                    },
                     justify_content: JustifyContent::Start,
                     align_items: AlignItems::Center,
                     position_type: PositionType::Relative,
@@ -224,13 +227,13 @@ impl SliderBuilder {
                         width: Val::Px(dimensions::SLIDER_HANDLE_SIZE),
                         height: Val::Px(dimensions::SLIDER_HANDLE_SIZE),
                         position_type: PositionType::Absolute,
-                        left: Val::Percent(handle_offset.min(95.0)),
+                        left: Val::Percent(handle_offset),
                         top: Val::Px(0.0),
                         border: UiRect::all(Val::Px(dimensions::BORDER_WIDTH_MEDIUM)),
                         ..default()
                     },
                     BackgroundColor(colors::PRIMARY),
-                    BorderColor(colors::BORDER_LIGHT),
+                    BorderColor::all(colors::BORDER_LIGHT),
                     BorderRadius::all(Val::Px(dimensions::SLIDER_HANDLE_SIZE / 2.0)),
                     SliderHandle,
                     // Add hover effects for the handle

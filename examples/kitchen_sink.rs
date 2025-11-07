@@ -362,7 +362,7 @@ struct ExitButton;
 
 fn handle_buttons(
     interaction_query: Query<(&Interaction, Option<&ExitButton>), (Changed<Interaction>, With<Button>)>,
-    mut exit_events: EventWriter<AppExit>,
+    mut exit_events: MessageWriter<AppExit>,
 ) {
     for (interaction, exit_marker) in &interaction_query {
         if *interaction == Interaction::Pressed {

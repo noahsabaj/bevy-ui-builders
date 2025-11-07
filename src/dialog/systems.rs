@@ -47,7 +47,7 @@ pub fn handle_cancel_button(
 }
 
 /// Event fired when a dialog button is clicked
-#[derive(Event)]
+#[derive(Message)]
 pub struct DialogButtonEvent {
     pub dialog_type: super::types::DialogType,
     pub button_marker: String,
@@ -55,7 +55,7 @@ pub struct DialogButtonEvent {
 
 /// System to emit events for dialog button clicks
 pub fn emit_dialog_button_events(
-    mut events: EventWriter<DialogButtonEvent>,
+    mut events: MessageWriter<DialogButtonEvent>,
     confirm_query: Query<&Interaction, (Changed<Interaction>, With<super::types::ConfirmButton>)>,
     save_query: Query<&Interaction, (Changed<Interaction>, With<super::types::SaveButton>)>,
     discard_query: Query<&Interaction, (Changed<Interaction>, With<super::types::DiscardButton>)>,

@@ -263,7 +263,7 @@ fn button_system(
 // System to handle dialog button events
 fn dialog_button_handler(
     mut commands: Commands,
-    mut events: EventReader<DialogButtonEvent>,
+    mut events: MessageReader<DialogButtonEvent>,
     dialog_query: Query<Entity, With<DialogOverlay>>,
 ) {
     for event in events.read() {
@@ -287,7 +287,7 @@ fn dialog_button_handler(
 
         // Close the dialog
         for dialog_entity in &dialog_query {
-            commands.entity(dialog_entity).despawn_recursive();
+            commands.entity(dialog_entity).despawn();
         }
     }
 }

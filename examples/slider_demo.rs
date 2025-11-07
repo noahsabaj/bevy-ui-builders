@@ -19,38 +19,44 @@ fn setup(mut commands: Commands) {
     // Camera
     commands.spawn(Camera2d);
 
-    // Root node
+    // Root node with scrolling enabled
     commands
         .spawn(Node {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
-            padding: UiRect::all(Val::Px(40.0)),
+            padding: UiRect::all(Val::Px(20.0)),
             flex_direction: FlexDirection::Column,
             align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            row_gap: Val::Px(40.0),
             ..default()
         })
         .with_children(|parent| {
-            // Title
-            parent.spawn((
-                Text::new("Slider Demo"),
-                TextFont {
-                    font_size: 36.0,
-                    ..default()
-                },
-                TextColor(Color::WHITE),
-            ));
+            // Scrollable container - intentionally limited height to enable scrolling
+            ScrollViewBuilder::new()
+                .max_height(Val::Vh(85.0)) // 85% of viewport to ensure content overflows
+                .width(Val::Percent(100.0))
+                .padding(UiRect::all(Val::Px(20.0)))
+                .gap(Val::Px(40.0))
+                .scrollbar_visibility(crate::scroll_view::ScrollbarVisibility::Always) // Always show for testing
+                .build_with_children(parent, |scroll| {
+                    // Title
+                    scroll.spawn((
+                        Text::new("Slider Demo"),
+                        TextFont {
+                            font_size: 36.0,
+                            ..default()
+                        },
+                        TextColor(Color::WHITE),
+                    ));
 
-            // Container for all sliders
-            parent
-                .spawn(Node {
-                    flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(30.0),
-                    width: Val::Px(500.0),
-                    ..default()
-                })
-                .with_children(|container| {
+                    // Container for all sliders
+                    scroll
+                        .spawn(Node {
+                            flex_direction: FlexDirection::Column,
+                            row_gap: Val::Px(30.0),
+                            width: Val::Px(500.0),
+                            ..default()
+                        })
+                        .with_children(|container| {
                     // Basic slider with percentage
                     create_slider_row(container, "Volume", |row| {
                         SliderBuilder::new(0.0..100.0)
@@ -121,29 +127,30 @@ fn setup(mut commands: Commands) {
                     });
                 });
 
-            // Value display section
-            parent
-                .spawn(Node {
-                    flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(10.0),
-                    padding: UiRect::all(Val::Px(20.0)),
-                    border: UiRect::all(Val::Px(1.0)),
-                    ..default()
-                })
-                .with_child((
-                    BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.5)),
-                    BorderColor(Color::srgba(0.3, 0.3, 0.3, 0.5)),
-                ))
-                .with_children(|display| {
-                    display.spawn((
-                        Text::new("Slider values are logged to console"),
-                        TextFont {
-                            font_size: 14.0,
+                    // Value display section
+                    scroll
+                        .spawn(Node {
+                            flex_direction: FlexDirection::Column,
+                            row_gap: Val::Px(10.0),
+                            padding: UiRect::all(Val::Px(20.0)),
+                            border: UiRect::all(Val::Px(1.0)),
                             ..default()
-                        },
-                        TextColor(Color::srgb(0.7, 0.7, 0.7)),
-                    ));
-                });
+                        })
+                        .with_child((
+                            BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.5)),
+                            BorderColor::all(Color::srgba(0.3, 0.3, 0.3, 0.5)),
+                        ))
+                        .with_children(|display| {
+                            display.spawn((
+                                Text::new("Slider values are logged to console"),
+                                TextFont {
+                                    font_size: 14.0,
+                                    ..default()
+                                },
+                                TextColor(Color::srgb(0.7, 0.7, 0.7)),
+                            ));
+                        });
+                }); // Close ScrollViewBuilder
         });
 }
 
@@ -184,7 +191,7 @@ fn create_color_picker_section(parent: &mut ChildSpawnerCommands) {
         })
         .with_child((
             BackgroundColor(Color::srgba(0.15, 0.15, 0.15, 0.8)),
-            BorderColor(Color::srgba(0.3, 0.3, 0.3, 0.5)),
+            BorderColor::all(Color::srgba(0.3, 0.3, 0.3, 0.5)),
         ))
         .with_children(|section| {
             // Title
@@ -233,7 +240,7 @@ fn create_color_picker_section(parent: &mut ChildSpawnerCommands) {
                     ..default()
                 },
                 BackgroundColor(Color::srgb(1.0, 0.5, 0.25)),
-                BorderColor(Color::WHITE),
+                BorderColor::all(Color::WHITE),
             ));
         });
 }

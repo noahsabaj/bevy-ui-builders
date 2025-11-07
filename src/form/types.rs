@@ -39,12 +39,70 @@ pub enum ValidationRule {
     MinLength(usize),
     /// Maximum length for text
     MaxLength(usize),
+    /// Numeric range validation
+    Range { min: f32, max: f32 },
     /// Pattern matching (regex)
     Pattern(String),
     /// Email validation
     Email,
     /// Custom validation function
     Custom(fn(&str) -> Result<(), String>),
+}
+
+impl ValidationRule {
+    /// Validate a value against this rule
+    pub fn validate(&self, value: &str) -> Result<(), String> {
+        match self {
+            Self::Required => {
+                if value.trim().is_empty() {
+                    Err("This field is required".to_string())
+                } else {
+                    Ok(())
+                }
+            }
+            Self::MinLength(min_len) => {
+                if value.len() < *min_len {
+                    Err(format!("Minimum {} characters required", min_len))
+                } else {
+                    Ok(())
+                }
+            }
+            Self::MaxLength(max_len) => {
+                if value.len() > *max_len {
+                    Err(format!("Maximum {} characters allowed", max_len))
+                } else {
+                    Ok(())
+                }
+            }
+            Self::Range { min, max } => {
+                match value.parse::<f32>() {
+                    Ok(num) if num < *min => Err(format!("Must be at least {}", min)),
+                    Ok(num) if num > *max => Err(format!("Must be at most {}", max)),
+                    Ok(_) => Ok(()),
+                    Err(_) => Err("Invalid number".to_string()),
+                }
+            }
+            Self::Pattern(pattern) => {
+                // Simple pattern matching - could be extended with regex crate
+                if value.contains(pattern) {
+                    Ok(())
+                } else {
+                    Err(format!("Must match pattern: {}", pattern))
+                }
+            }
+            Self::Email => {
+                // Basic email validation
+                if value.contains('@') && value.contains('.') {
+                    Ok(())
+                } else {
+                    Err("Invalid email address".to_string())
+                }
+            }
+            Self::Custom(validator) => {
+                validator(value)
+            }
+        }
+    }
 }
 
 /// A field in the form
@@ -105,7 +163,7 @@ pub struct FormSubmitButton {
 }
 
 /// Event fired when form is submitted
-#[derive(Event)]
+#[derive(Message)]
 pub struct FormSubmitEvent {
     /// Form identifier
     pub form_id: String,

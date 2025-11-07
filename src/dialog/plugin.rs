@@ -5,7 +5,7 @@ use super::systems::*;
 
 // Plugin that adds dialog interaction systems
 define_plugin!(DialogPlugin {
-    events: [DialogButtonEvent],
+    messages: [DialogButtonEvent],
     update: [
         handle_dialog_escape,
         handle_dialog_overlay_click,

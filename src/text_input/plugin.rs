@@ -7,7 +7,7 @@ use super::systems::handle_clear_button_clicks;
 
 // Plugin that provides the complete text input system
 define_plugin!(TextInputPlugin {
-    events: [
+    messages: [
         TextInputSubmitEvent,
         TextInputChangeEvent
     ],

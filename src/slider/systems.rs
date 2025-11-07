@@ -36,7 +36,8 @@ pub fn handle_slider_interaction(
 
         if *dragged_slider == Some(entity) {
             if let Some(cursor_pos) = cursor_pos.normalized {
-                let normalized_x = cursor_pos.x.clamp(0.0, 1.0);
+                // Bevy 0.17: Convert center-based [-0.5, 0.5] to corner-based [0.0, 1.0]
+                let normalized_x = (cursor_pos.x + 0.5).clamp(0.0, 1.0);
                 slider.set_normalized(normalized_x);
             }
         }
@@ -51,14 +52,17 @@ pub fn update_slider_visuals(
     mut value_texts: Query<&mut Text>,
 ) {
     for (slider, config, children) in &sliders {
+        let normalized_percent = slider.normalized() * 100.0;
+
         for child in children.iter() {
             if let Ok(mut fill_node) = fills.get_mut(child) {
-                fill_node.width = Val::Percent(slider.normalized() * 100.0);
+                // Clean percentage - padding on container handles alignment
+                fill_node.width = Val::Percent(normalized_percent);
             }
 
             if let Ok(mut handle_node) = handles.get_mut(child) {
-                let handle_offset = slider.normalized() * 100.0;
-                handle_node.left = Val::Percent(handle_offset.min(95.0));
+                // Handle position matches fill exactly - no clamping needed
+                handle_node.left = Val::Percent(normalized_percent);
             }
         }
 

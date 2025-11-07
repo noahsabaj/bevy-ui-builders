@@ -24,6 +24,7 @@ pub struct TextInputBuilder {
     retain_on_submit: bool,
     filter: Option<TextInputFilter>,
     show_clear_button: bool,
+    validation_rules: Option<Vec<crate::ValidationRule>>,
 }
 
 /// Builder with a single marker component
@@ -79,7 +80,7 @@ fn build_text_input_with_extras<M>(
                         ..default()
                     },
                     BackgroundColor(colors::BACKGROUND_LIGHT),
-                    BorderColor(colors::BORDER_DEFAULT),
+                    BorderColor::all(colors::BORDER_DEFAULT),
                     BorderRadius::all(Val::Px(5.0)),
                     // Native text input components
                     NativeTextInput,
@@ -163,7 +164,7 @@ fn build_text_input_with_extras<M>(
                 ..default()
             },
             BackgroundColor(colors::BACKGROUND_LIGHT),
-            BorderColor(colors::BORDER_DEFAULT),
+            BorderColor::all(colors::BORDER_DEFAULT),
             BorderRadius::all(Val::Px(5.0)),
             // Native text input components
             NativeTextInput,
@@ -214,6 +215,14 @@ fn build_text_input_with_extras<M>(
             entity_commands.insert(filter);
         }
 
+        // Add validation if specified
+        if let Some(rules) = builder.validation_rules {
+            entity_commands.insert((
+                crate::validation::Validated::new(rules),
+                crate::validation::ValidationState::default(),
+            ));
+        }
+
         entity_commands.id()
     }
 }
@@ -232,6 +241,7 @@ impl TextInputBuilder {
             retain_on_submit: true,
             filter: None,
             show_clear_button: false,
+            validation_rules: None,
         }
     }
 
@@ -381,6 +391,12 @@ impl TextInputBuilder {
 
     pub fn with_clear_button(mut self) -> Self {
         self.show_clear_button = true;
+        self
+    }
+
+    /// Add validation rules to this text input
+    pub fn with_validation(mut self, rules: Vec<crate::ValidationRule>) -> Self {
+        self.validation_rules = Some(rules);
         self
     }
 

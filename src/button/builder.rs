@@ -1,6 +1,7 @@
 //! ButtonBuilder implementation
 
 use bevy::prelude::*;
+use bevy::picking::Pickable;
 use crate::styles::{colors, dimensions, ButtonStyle, ButtonSize};
 use super::types::{StyledButton, ButtonStateColors};
 use crate::systems::hover::{HoverScale, HoverBrightness, OriginalColors};
@@ -132,9 +133,10 @@ impl ButtonBuilder {
                 ..default()
             },
             BackgroundColor(bg_color),
-            BorderColor(border_color),
+            BorderColor::all(border_color),
             BorderRadius::all(Val::Px(dimensions::BORDER_RADIUS_MEDIUM)),
             StyledButton,
+            Transform::default(), // Required for scale animations
         ));
 
         // Store state colors for automatic hover effects
@@ -189,6 +191,7 @@ impl ButtonBuilder {
                         ..default()
                     },
                     BackgroundColor(Color::NONE),
+                    Pickable::IGNORE, // Don't block button interaction
                 )).with_children(|container| {
                     // Icon
                     container.spawn((
@@ -198,6 +201,7 @@ impl ButtonBuilder {
                             ..default()
                         },
                         TextColor(text_color),
+                        Pickable::IGNORE, // Don't block button interaction
                     ));
 
                     // Text
@@ -208,6 +212,7 @@ impl ButtonBuilder {
                             ..default()
                         },
                         TextColor(text_color),
+                        Pickable::IGNORE, // Don't block button interaction
                     ));
                 });
             } else {
@@ -219,6 +224,7 @@ impl ButtonBuilder {
                         ..default()
                     },
                     TextColor(text_color),
+                    Pickable::IGNORE, // Don't block button interaction
                 ));
             }
         });

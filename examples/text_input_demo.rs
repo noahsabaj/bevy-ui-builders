@@ -271,7 +271,7 @@ fn setup(mut commands: Commands) {
                 })
                 .with_child((
                     BackgroundColor(Color::srgba(0.1, 0.1, 0.15, 0.8)),
-                    BorderColor(Color::srgba(0.4, 0.4, 0.5, 0.5)),
+                    BorderColor::all(Color::srgba(0.4, 0.4, 0.5, 0.5)),
                 ))
                 .with_children(|section| {
                     // Title
@@ -332,7 +332,7 @@ fn setup(mut commands: Commands) {
                 })
                 .with_child((
                     BackgroundColor(Color::srgba(0.05, 0.05, 0.05, 0.8)),
-                    BorderColor(Color::srgba(0.2, 0.2, 0.2, 0.5)),
+                    BorderColor::all(Color::srgba(0.2, 0.2, 0.2, 0.5)),
                 ))
                 .with_children(|shortcuts| {
                     shortcuts.spawn((

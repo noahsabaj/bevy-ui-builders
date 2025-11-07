@@ -158,6 +158,30 @@ impl ProgressBarParts {
 }
 
 // ============================================================================
+// Dropdown Relationships
+// ============================================================================
+
+/// Marks an entity as belonging to a specific dropdown (menu options).
+/// When the dropdown is closed or despawned, all related entities
+/// are automatically cleaned up thanks to linked_spawn.
+#[derive(Component)]
+#[relationship(relationship_target = DropdownElements)]
+pub struct BelongsToDropdown(pub Entity);
+
+/// Contains all entities that belong to this dropdown (menu, options).
+/// The linked_spawn attribute ensures automatic cleanup when dropdown is despawned.
+#[derive(Component)]
+#[relationship_target(relationship = BelongsToDropdown, linked_spawn)]
+pub struct DropdownElements(Vec<Entity>);
+
+impl DropdownElements {
+    /// Get an iterator over the dropdown elements
+    pub fn iter(&self) -> impl Iterator<Item = &Entity> {
+        self.0.iter()
+    }
+}
+
+// ============================================================================
 // Temporary Components (should be moved to appropriate modules)
 // ============================================================================
 

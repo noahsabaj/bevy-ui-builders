@@ -23,6 +23,7 @@ mod styles;
 mod systems;
 mod utils;
 pub mod relationships;
+pub mod validation;
 
 // Individual builder imports
 #[cfg(feature = "button")]
@@ -43,6 +44,12 @@ pub mod label;
 pub mod panel;
 #[cfg(feature = "separator")]
 pub mod separator;
+#[cfg(feature = "checkbox")]
+pub mod checkbox;
+#[cfg(feature = "number_input")]
+pub mod number_input;
+#[cfg(feature = "dropdown")]
+pub mod dropdown;
 
 // ScrollView module (always available - core functionality)
 pub mod scroll_view;
@@ -64,8 +71,10 @@ pub use relationships::{
     PanelContent, PanelContents,
     TextInputPart, TextInputParts,
     ProgressBarPart, ProgressBarParts,
+    BelongsToDropdown, DropdownElements,
     UIRelationshipsPlugin,
 };
+pub use validation::{Validated, ValidationState, ValidationPlugin};
 
 // Builder exports based on features
 #[cfg(feature = "button")]
@@ -106,12 +115,24 @@ pub use panel::{PanelBuilder, Panel, PanelStyle, panel};
 #[cfg(feature = "separator")]
 pub use separator::{SeparatorBuilder, Separator, SeparatorStyle, Orientation, separator};
 
+#[cfg(feature = "checkbox")]
+pub use checkbox::{CheckboxBuilder, Checkbox, CheckboxState, CheckboxStyle};
+
+#[cfg(feature = "number_input")]
+pub use number_input::{NumberInputBuilder, NumberInput, NumberInputConfig};
+
+#[cfg(feature = "dropdown")]
+pub use dropdown::{DropdownBuilder, Dropdown, DropdownState, DropdownData};
+
 /// Prelude module for convenient imports
 pub mod prelude {
     #[doc(hidden)]
     pub use crate::{
         despawn_ui_entities, despawn_entities,
     };
+
+    // Validation
+    pub use crate::{Validated, ValidationState, ValidationRule};
 
     #[cfg(feature = "button")]
     pub use crate::{ButtonBuilder, ButtonStyle, ButtonSize};
@@ -120,7 +141,7 @@ pub mod prelude {
     pub use crate::{SliderBuilder, ValueFormat};
 
     #[cfg(feature = "form")]
-    pub use crate::{FormBuilder, FieldType, ValidationRule};
+    pub use crate::{FormBuilder, FieldType};
 
     #[cfg(feature = "dialog")]
     pub use crate::{
@@ -144,11 +165,25 @@ pub mod prelude {
 
     #[cfg(feature = "separator")]
     pub use crate::{SeparatorBuilder, Orientation};
+
+    #[cfg(feature = "checkbox")]
+    pub use crate::{CheckboxBuilder, CheckboxState, CheckboxStyle};
+
+    #[cfg(feature = "number_input")]
+    pub use crate::{NumberInputBuilder};
+
+    #[cfg(feature = "dropdown")]
+    pub use crate::{DropdownBuilder, DropdownState};
 }
 
 define_plugin!(UiBuilderPlugin {
-    plugins: [HoverPlugin, UIRelationshipsPlugin, ScrollViewPlugin],
+    plugins: [HoverPlugin, UIRelationshipsPlugin, ScrollViewPlugin, ValidationPlugin],
     custom_init: |app: &mut App| {
+        // Bevy 0.17 requires picking plugins for Interaction component updates
+        // Only add if not already present (DefaultPlugins includes them)
+        if !app.is_plugin_added::<bevy::picking::input::PointerInputPlugin>() {
+            app.add_plugins(bevy::picking::DefaultPickingPlugins);
+        }
         #[cfg(feature = "button")]
         app.add_plugins(button::ButtonPlugin);
 
@@ -163,5 +198,11 @@ define_plugin!(UiBuilderPlugin {
 
         #[cfg(feature = "progress")]
         app.add_plugins(progress::ProgressBarPlugin);
+
+        #[cfg(feature = "checkbox")]
+        app.add_plugins(checkbox::CheckboxPlugin);
+
+        #[cfg(feature = "dropdown")]
+        app.add_plugins(dropdown::DropdownPlugin);
     }
 });

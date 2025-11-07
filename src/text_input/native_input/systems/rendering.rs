@@ -4,7 +4,6 @@ use bevy::prelude::*;
 use bevy::text::TextLayoutInfo;
 
 use super::super::components::*;
-use super::super::types::*;
 
 /// Render text with embedded cursor (split into 3 spans)
 pub fn render_text(
