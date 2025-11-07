@@ -23,7 +23,10 @@ jobs:
             libudev-dev \
             libxcb-render0-dev \
             libxcb-shape0-dev \
-            libxcb-xfixes0-dev
+            libxcb-xfixes0-dev \
+            libwayland-dev \
+            libxkbcommon-dev \
+            pkg-config
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -54,7 +57,10 @@ jobs:
             libudev-dev \
             libxcb-render0-dev \
             libxcb-shape0-dev \
-            libxcb-xfixes0-dev
+            libxcb-xfixes0-dev \
+            libwayland-dev \
+            libxkbcommon-dev \
+            pkg-config
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable

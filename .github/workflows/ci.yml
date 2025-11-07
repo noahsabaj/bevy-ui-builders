@@ -23,7 +23,10 @@ jobs:
             libudev-dev \
             libxcb-render0-dev \
             libxcb-shape0-dev \
-            libxcb-xfixes0-dev
+            libxcb-xfixes0-dev \
+            libwayland-dev \
+            libxkbcommon-dev \
+            pkg-config
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -62,7 +65,10 @@ jobs:
             libudev-dev \
             libxcb-render0-dev \
             libxcb-shape0-dev \
-            libxcb-xfixes0-dev
+            libxcb-xfixes0-dev \
+            libwayland-dev \
+            libxkbcommon-dev \
+            pkg-config
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -93,7 +99,10 @@ jobs:
             libudev-dev \
             libxcb-render0-dev \
             libxcb-shape0-dev \
-            libxcb-xfixes0-dev
+            libxcb-xfixes0-dev \
+            libwayland-dev \
+            libxkbcommon-dev \
+            pkg-config
 
       - name: Setup Rust (1.75 - typical MSRV for Bevy 0.16)
         uses: dtolnay/rust-toolchain@1.75
