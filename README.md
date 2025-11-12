@@ -65,7 +65,7 @@ ButtonBuilder::new("Click Me")
   - Auto-validates against min/max range
   - Shows red border when out of bounds
 
-### Universal Validation System (NEW)
+### Universal Validation System
 - Composable validation rules work with ANY input (not just forms)
 - `TextInputBuilder.with_validation(Vec<ValidationRule>)` method
 - Visual feedback: red border on error, default border when valid
