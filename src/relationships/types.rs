@@ -83,7 +83,7 @@ pub struct InButtonGroup(pub Entity);
 
 /// Contains all buttons in this button group.
 /// Note: No linked_spawn here as button groups may outlive individual buttons.
-#[derive(Component)]
+#[derive(Component, Default)]
 #[relationship_target(relationship = InButtonGroup)]
 pub struct ButtonGroupMembers(Vec<Entity>);
 
@@ -91,6 +91,11 @@ impl ButtonGroupMembers {
     /// Get an iterator over the button group members
     pub fn iter(&self) -> impl Iterator<Item = &Entity> {
         self.0.iter()
+    }
+
+    /// Create a new empty button group
+    pub fn new() -> Self {
+        Self(Vec::new())
     }
 }
 

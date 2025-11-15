@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2025-11-14
+
+### Added
+- **Button Selection States**: Complete multi-state selection system for ButtonBuilder
+  - New components: `SelectableButton`, `Selected`, `Active`
+  - Auto-toggle functionality for checkbox/toggle behavior
+  - Radio button group support with exclusive selection using `InButtonGroup` relationship
+  - Builder methods: `.selectable()`, `.selected()`, `.active()`, `.in_group()`, `.manual_toggle()`, `.selection_colors()`
+  - `SelectionChanged` message events for tracking selection changes
+  - Auto-generated selection colors: unselected=gray, selected=style color, active=emphasized
+  - Custom selection color support via `.selection_colors()`
+  - State priority: Active > Selected > Normal > Disabled
+
+### Fixed
+- **Button Group Exclusivity**: Fixed radio button groups not working correctly
+  - Removed conflicting `handle_exclusive_button_groups` system from `UIRelationshipsPlugin`
+  - Fixed system ordering to ensure `Selected` component changes are applied before color updates
+  - Changed systems to run in chain to ensure deferred commands are processed correctly
+  - Excluded grouped buttons from auto-toggle system to prevent conflicts
+  - Added `Default` derive to `ButtonGroupMembers` for easier instantiation
+
+### Changed
+- **Selection Color Generation**: Improved visual distinction for selectable buttons
+  - Unselected state now uses neutral gray (SECONDARY) instead of style color
+  - Selected state uses the button's style color (PRIMARY, SUCCESS, etc.)
+  - Active state uses emphasized darker/saturated version of style color
+  - Makes radio buttons and toggles much clearer with distinct selected vs unselected states
+
 ## [0.2.0] - 2025-11-04
 
 ### Breaking Changes

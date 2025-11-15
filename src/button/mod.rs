@@ -17,7 +17,15 @@ pub use builder::{
     ghost_button,
 };
 pub use plugin::ButtonPlugin;
-pub use types::StyledButton;
+pub use types::{
+    StyledButton,
+    SelectableButton,
+    Selected,
+    Active,
+    ButtonSelectionColors,
+    StateColorSet,
+    SelectionChanged,
+};
 
 // Re-export styles for convenience
 pub use crate::styles::{ButtonStyle, ButtonSize};

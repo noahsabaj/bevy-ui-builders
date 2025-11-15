@@ -3,8 +3,9 @@
 use bevy::prelude::*;
 use bevy::picking::Pickable;
 use crate::styles::{colors, dimensions, ButtonStyle, ButtonSize};
-use super::types::{StyledButton, ButtonStateColors};
+use super::types::{StyledButton, ButtonStateColors, SelectableButton, Selected, Active, ButtonSelectionColors, StateColorSet};
 use crate::systems::hover::{HoverScale, HoverBrightness, OriginalColors};
+use crate::relationships::InButtonGroup;
 
 /// Builder for creating buttons with consistent styling
 pub struct ButtonBuilder {
@@ -18,6 +19,13 @@ pub struct ButtonBuilder {
     hover_brightness: Option<f32>,
     disabled: bool,
     icon: Option<String>,
+    // Selection state fields
+    selectable: bool,
+    auto_toggle: bool,
+    is_selected: bool,
+    is_active: bool,
+    button_group: Option<Entity>,
+    custom_selection_colors: Option<(StateColorSet, StateColorSet)>, // (selected, active)
 }
 
 impl ButtonBuilder {
@@ -34,6 +42,12 @@ impl ButtonBuilder {
             hover_brightness: None,
             disabled: false,
             icon: None,
+            selectable: false,
+            auto_toggle: true,
+            is_selected: false,
+            is_active: false,
+            button_group: None,
+            custom_selection_colors: None,
         }
     }
 
@@ -94,6 +108,48 @@ impl ButtonBuilder {
     /// Add an icon (emoji or symbol)
     pub fn icon(mut self, icon: impl Into<String>) -> Self {
         self.icon = Some(icon.into());
+        self
+    }
+
+    /// Make the button selectable (supports toggle/selection behavior)
+    pub fn selectable(mut self) -> Self {
+        self.selectable = true;
+        self
+    }
+
+    /// Set the initial selected state (implies selectable)
+    pub fn selected(mut self, selected: bool) -> Self {
+        self.selectable = true;
+        self.is_selected = selected;
+        self
+    }
+
+    /// Set the button as active (implies selectable)
+    /// Active state is used for current tab/page indicators
+    pub fn active(mut self, active: bool) -> Self {
+        self.selectable = true;
+        self.is_active = active;
+        self
+    }
+
+    /// Disable auto-toggle behavior (selection must be managed manually)
+    pub fn manual_toggle(mut self) -> Self {
+        self.auto_toggle = false;
+        self
+    }
+
+    /// Add this button to a button group for exclusive selection (radio button behavior)
+    /// Automatically makes the button selectable
+    pub fn in_group(mut self, group_entity: Entity) -> Self {
+        self.selectable = true;
+        self.button_group = Some(group_entity);
+        self
+    }
+
+    /// Set custom colors for selected and active states
+    /// If not set, colors are auto-generated from the button style
+    pub fn selection_colors(mut self, selected: StateColorSet, active: StateColorSet) -> Self {
+        self.custom_selection_colors = Some((selected, active));
         self
     }
 
@@ -175,6 +231,38 @@ impl ButtonBuilder {
 
         if self.disabled {
             button.insert(Interaction::None);
+        }
+
+        // Add selection components if selectable
+        if self.selectable {
+            button.insert(SelectableButton {
+                auto_toggle: self.auto_toggle,
+            });
+
+            // Generate or use custom selection colors
+            let selection_colors = if let Some((selected, active)) = self.custom_selection_colors {
+                let mut base_colors = generate_selection_colors(&self.style);
+                base_colors.selected = selected;
+                base_colors.active = active;
+                base_colors
+            } else {
+                generate_selection_colors(&self.style)
+            };
+
+            button.insert(selection_colors);
+
+            // Add initial state markers
+            if self.is_selected {
+                button.insert(Selected);
+            }
+            if self.is_active {
+                button.insert(Active);
+            }
+
+            // Add to button group if specified
+            if let Some(group_entity) = self.button_group {
+                button.insert(InButtonGroup(group_entity));
+            }
         }
 
         let button_entity = button.id();
@@ -271,6 +359,82 @@ fn get_font_size(size: &ButtonSize) -> f32 {
         ButtonSize::Large => dimensions::FONT_SIZE_LARGE,
         ButtonSize::XLarge => dimensions::FONT_SIZE_XLARGE,
     }
+}
+
+/// Generate selection colors for a button style
+/// Returns (normal, selected, active) StateColorSets
+/// For selectable buttons: normal=gray, selected=style color, active=emphasized
+fn generate_selection_colors(style: &ButtonStyle) -> ButtonSelectionColors {
+    let (style_bg, style_border, _text_color) = get_style_colors(style, false);
+
+    // Normal state (unselected) - use neutral gray like Secondary style
+    // This makes unselected radio buttons/toggles clearly distinct
+    let normal = StateColorSet::new(
+        colors::SECONDARY,           // Gray background when not selected
+        colors::SECONDARY_HOVER,     // Slightly lighter on hover
+        colors::SECONDARY_PRESSED,   // Slightly darker when pressed
+        colors::BORDER_DEFAULT,
+        colors::BORDER_DEFAULT,
+        colors::BORDER_DEFAULT,
+    );
+
+    // Selected state - use the button's actual style color (Primary blue, Success green, etc.)
+    let selected = StateColorSet::new(
+        style_bg,                    // Use the style's color (e.g., PRIMARY blue)
+        style.hover_color(),         // Hover variant
+        style.pressed_color(),       // Pressed variant
+        style_border,
+        style_border,
+        style_border,
+    );
+
+    // Active state - darker/more saturated version of selected for emphasis
+    let active_bg = adjust_color_for_selection(style_bg, 0.85, 1.15);
+    let active_border = adjust_color_for_selection(style_border, 0.85, 1.1);
+    let active = StateColorSet::new(
+        active_bg,
+        adjust_color_for_selection(active_bg, 1.1, 1.0), // Hover is lighter
+        adjust_color_for_selection(active_bg, 0.9, 1.0), // Pressed is darker
+        active_border,
+        active_border,
+        active_border,
+    );
+
+    ButtonSelectionColors {
+        normal,
+        selected,
+        active,
+    }
+}
+
+/// Adjust a color's brightness and saturation for selection states
+fn adjust_color_for_selection(color: Color, brightness: f32, saturation: f32) -> Color {
+    let linear = color.to_linear();
+
+    // Convert to HSV for saturation adjustment
+    let max = linear.red.max(linear.green).max(linear.blue);
+    let min = linear.red.min(linear.green).min(linear.blue);
+    let delta = max - min;
+
+    if delta < 0.00001 {
+        // Grayscale - just adjust brightness
+        return Color::LinearRgba(LinearRgba {
+            red: (linear.red * brightness).min(1.0),
+            green: (linear.green * brightness).min(1.0),
+            blue: (linear.blue * brightness).min(1.0),
+            alpha: linear.alpha,
+        });
+    }
+
+    // Apply brightness and saturation
+    let avg = (linear.red + linear.green + linear.blue) / 3.0;
+
+    Color::LinearRgba(LinearRgba {
+        red: ((linear.red - avg) * saturation + avg) * brightness,
+        green: ((linear.green - avg) * saturation + avg) * brightness,
+        blue: ((linear.blue - avg) * saturation + avg) * brightness,
+        alpha: linear.alpha,
+    })
 }
 
 /// Convenience function for creating a primary button

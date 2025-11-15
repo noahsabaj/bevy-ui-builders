@@ -1,8 +1,9 @@
 //! Button interaction systems
 
 use bevy::prelude::*;
-use super::types::{StyledButton, ButtonStateColors, ButtonAnimationState};
+use super::types::{StyledButton, ButtonStateColors, ButtonAnimationState, SelectableButton, Selected, Active, ButtonSelectionColors, SelectionChanged};
 use crate::systems::hover::{HoverScale, HoverBrightness, OriginalColors, apply_brightness};
+use crate::relationships::{InButtonGroup, ButtonGroupMembers};
 
 /// System to handle hover scale effects
 pub fn handle_hover_scale(
@@ -134,4 +135,157 @@ fn lerp_color(from: Color, to: Color, t: f32) -> Color {
         blue: from_linear.blue + (to_linear.blue - from_linear.blue) * t,
         alpha: from_linear.alpha + (to_linear.alpha - from_linear.alpha) * t,
     })
+}
+
+// ============================================================================
+// Selection State Systems
+// ============================================================================
+
+/// System to handle auto-toggle behavior for selectable buttons
+/// Toggles the Selected component when a selectable button is clicked
+/// NOTE: Buttons in groups are handled by enforce_exclusive_button_groups instead
+pub fn auto_toggle_selectable_buttons(
+    mut commands: Commands,
+    query: Query<
+        (Entity, &Interaction, &SelectableButton, Option<&Selected>),
+        (Changed<Interaction>, With<StyledButton>, Without<InButtonGroup>),
+    >,
+    mut events: MessageWriter<SelectionChanged>,
+) {
+    for (entity, interaction, selectable, selected) in &query {
+        if *interaction == Interaction::Pressed && selectable.auto_toggle {
+            if selected.is_some() {
+                // Deselect
+                commands.entity(entity).remove::<Selected>();
+                events.write(SelectionChanged {
+                    entity,
+                    selected: false,
+                });
+            } else {
+                // Select
+                commands.entity(entity).insert(Selected);
+                events.write(SelectionChanged {
+                    entity,
+                    selected: true,
+                });
+            }
+        }
+    }
+}
+
+/// System to enforce exclusive selection within button groups (radio button behavior)
+/// When a button in a group is clicked, deselects all other buttons in the group
+pub fn enforce_exclusive_button_groups(
+    mut commands: Commands,
+    clicked_query: Query<
+        (Entity, &Interaction, &InButtonGroup),
+        (Changed<Interaction>, With<SelectableButton>),
+    >,
+    group_query: Query<&ButtonGroupMembers>,
+    mut events: MessageWriter<SelectionChanged>,
+) {
+    for (clicked_entity, interaction, in_group) in &clicked_query {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        // Get all members of this button's group
+        if let Ok(members) = group_query.get(in_group.0) {
+            let member_count = members.iter().count();
+            info!("🔘 Radio button {:?} clicked in group {:?} with {} members",
+                  clicked_entity, in_group.0, member_count);
+
+            // Deselect all other buttons in the group
+            for &member_entity in members.iter() {
+                if member_entity != clicked_entity {
+                    info!("  ❌ Deselecting button {:?}", member_entity);
+                    commands.entity(member_entity).remove::<Selected>();
+                    events.write(SelectionChanged {
+                        entity: member_entity,
+                        selected: false,
+                    });
+                }
+            }
+
+            // Select the clicked button
+            info!("  ✅ Selecting button {:?}", clicked_entity);
+            commands.entity(clicked_entity).insert(Selected);
+            events.write(SelectionChanged {
+                entity: clicked_entity,
+                selected: true,
+            });
+        } else {
+            warn!("Button {:?} is in group {:?} but group has no ButtonGroupMembers component!",
+                  clicked_entity, in_group.0);
+        }
+    }
+}
+
+/// System to update button appearance based on selection state
+/// Applies the correct color set based on Active > Selected > Normal priority
+/// NOTE: Runs every frame for selectable buttons to immediately reflect state changes
+pub fn update_selection_appearance(
+    mut query: Query<
+        (
+            &ButtonSelectionColors,
+            &mut ButtonStateColors,
+            Option<&Active>,
+            Option<&Selected>,
+        ),
+        With<SelectableButton>,
+    >,
+) {
+    for (selection_colors, mut state_colors, active, selected) in &mut query {
+        // Determine which color set to use based on priority: Active > Selected > Normal
+        let color_set = if active.is_some() {
+            &selection_colors.active
+        } else if selected.is_some() {
+            &selection_colors.selected
+        } else {
+            &selection_colors.normal
+        };
+
+        // Update the ButtonStateColors to use the appropriate set
+        state_colors.normal_bg = color_set.normal_bg;
+        state_colors.hover_bg = color_set.hover_bg;
+        state_colors.pressed_bg = color_set.pressed_bg;
+        state_colors.normal_border = color_set.normal_border;
+        state_colors.hover_border = color_set.hover_border;
+        state_colors.pressed_border = color_set.pressed_border;
+    }
+}
+
+/// System to immediately apply colors when selection state changes
+/// This ensures the button visuals update instantly without waiting for interaction
+pub fn apply_selection_colors_immediately(
+    mut query: Query<
+        (
+            &ButtonStateColors,
+            &Interaction,
+            &mut BackgroundColor,
+            &mut BorderColor,
+        ),
+        (
+            With<SelectableButton>,
+            Or<(Changed<ButtonStateColors>, Changed<Selected>, Changed<Active>)>,
+        ),
+    >,
+) {
+    for (state_colors, interaction, mut bg_color, mut border_color) in &mut query {
+        // Apply colors based on current interaction state
+        match interaction {
+            Interaction::Pressed => {
+                bg_color.0 = state_colors.pressed_bg;
+                *border_color = BorderColor::all(state_colors.pressed_border);
+            }
+            Interaction::Hovered => {
+                bg_color.0 = state_colors.hover_bg;
+                *border_color = BorderColor::all(state_colors.hover_border);
+            }
+            Interaction::None => {
+                bg_color.0 = state_colors.normal_bg;
+                *border_color = BorderColor::all(state_colors.normal_border);
+            }
+        }
+    }
 }
