@@ -29,7 +29,7 @@ bevy = "0.17"
 
 [features]
 default = ["all_builders"]
-all_builders = ["button", "slider", "dialog", "text_input", "panel", "form", "progress", "label", "separator", "checkbox", "number_input", "dropdown"]
+all_builders = ["button", "slider", "dialog", "text_input", "panel", "form", "progress", "label", "separator", "checkbox", "number_input", "dropdown", "tooltip", "tabs", "toast", "context_menu"]
 button = []
 slider = []
 dialog = []
@@ -42,7 +42,18 @@ separator = []
 checkbox = []
 number_input = ["text_input"]
 dropdown = []
+tooltip = []
+tabs = []
+toast = []
+context_menu = []
 cleanup = []
+
+# Game UI features (separate from all_builders)
+game_ui = ["inventory", "resource_bar", "minimap", "dialogue"]
+inventory = []
+resource_bar = []
+minimap = []
+dialogue = []
 
 [[example]]
 name = "button_showcase"
