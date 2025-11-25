@@ -1,4 +1,28 @@
 //! Color constants and utilities for consistent theming
+//!
+//! # Deprecation Notice
+//!
+//! This module is deprecated. Use the theme system instead:
+//!
+//! ```ignore
+//! // Instead of using colors::PRIMARY directly:
+//! use bevy_ui_builders::theme::UiTheme;
+//!
+//! fn setup(theme: Res<UiTheme>) {
+//!     // Access colors through the theme
+//!     let primary = theme.colors.primary.base;
+//!     let text = theme.colors.text.primary;
+//! }
+//!
+//! // Builders now support .themed() for automatic theme integration:
+//! ButtonBuilder::new("Click me")
+//!     .themed(&theme)  // Uses theme colors
+//!     .build(parent);
+//! ```
+//!
+//! These constants are kept for backwards compatibility only.
+
+#![allow(missing_docs)]
 
 use bevy::prelude::*;
 
@@ -23,8 +47,8 @@ pub const WARNING: Color = Color::srgb(0.96, 0.76, 0.05);         // Yellow
 pub const WARNING_HOVER: Color = Color::srgb(1.0, 0.86, 0.15);
 pub const WARNING_PRESSED: Color = Color::srgb(0.86, 0.66, 0.0);
 
-pub const GHOST_HOVER: Color = Color::srgba(1.0, 1.0, 1.0, 0.05);
-pub const GHOST_PRESSED: Color = Color::srgba(1.0, 1.0, 1.0, 0.1);
+pub const GHOST_HOVER: Color = Color::srgba(1.0, 1.0, 1.0, 0.20);
+pub const GHOST_PRESSED: Color = Color::srgba(1.0, 1.0, 1.0, 0.35);
 
 // Dark variants for hover states
 pub const PRIMARY_DARK: Color = Color::srgb(0.15, 0.36, 0.76);
