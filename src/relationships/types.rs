@@ -97,6 +97,18 @@ impl ButtonGroupMembers {
     pub fn new() -> Self {
         Self(Vec::new())
     }
+
+    /// Add a button to this group
+    pub fn push(&mut self, entity: Entity) {
+        if !self.0.contains(&entity) {
+            self.0.push(entity);
+        }
+    }
+
+    /// Remove a button from this group
+    pub fn remove(&mut self, entity: Entity) {
+        self.0.retain(|&e| e != entity);
+    }
 }
 
 // ============================================================================

@@ -5,7 +5,8 @@ use crate::animation::{AnimationCategory, DisableAutoAnimation};
 use crate::styles::{dimensions, ButtonStyle, ButtonSize};
 use crate::theme::UiTheme;
 use crate::traits::{InteractiveConfig, UiBuilder, LayoutBuilder, BuilderBase};
-use super::types::{StyledButton, StateColorSet};
+use crate::relationships::{InButtonGroup, ButtonGroupMembers};
+use super::types::{StyledButton, StateColorSet, SelectableButton, Selected, Active, ButtonSelectionColors, ButtonStateColors};
 
 /// Resolved button colors from theme
 #[derive(Clone)]
@@ -218,6 +219,32 @@ impl UiBuilder for ButtonBuilder {
 
         let button_entity = button.id();
 
+        // Handle selectable button setup - prepare the components
+        let selectable_setup = if self.selectable {
+            // Get base colors for normal state
+            let normal_colors = StateColorSet::from_base(colors.bg, colors.border);
+
+            // Generate selection colors (brighter version for selected state)
+            let (selected_colors, active_colors) = self.custom_selection_colors.clone()
+                .unwrap_or_else(|| {
+                    // Selected state: use a brighter/more saturated version
+                    let selected_bg = self.style.base_color();
+                    let selected_border = self.style.base_color();
+                    let selected = StateColorSet::from_base(selected_bg, selected_border);
+
+                    // Active state: even more prominent
+                    let active_bg = self.style.hover_color();
+                    let active_border = self.style.base_color();
+                    let active = StateColorSet::from_base(active_bg, active_border);
+
+                    (selected, active)
+                });
+
+            Some((normal_colors, selected_colors, active_colors, self.auto_toggle, self.is_selected, self.is_active, self.button_group))
+        } else {
+            None
+        };
+
         button.with_children(|button| {
             if let Some(icon) = self.icon {
                 // Icon + Text layout
@@ -270,6 +297,51 @@ impl UiBuilder for ButtonBuilder {
         // Apply hooks
         for hook in self.base.hooks {
             hook(&mut parent.commands().entity(button_entity));
+        }
+
+        // Apply selectable setup after children are spawned
+        if let Some((normal_colors, selected_colors, active_colors, auto_toggle, is_selected, is_active, button_group)) = selectable_setup {
+            let mut cmds = parent.commands();
+            let mut entity_cmds = cmds.entity(button_entity);
+
+            entity_cmds.insert((
+                SelectableButton { auto_toggle },
+                ButtonSelectionColors {
+                    normal: normal_colors.clone(),
+                    selected: selected_colors,
+                    active: active_colors,
+                },
+                ButtonStateColors {
+                    normal_bg: normal_colors.normal_bg,
+                    hover_bg: normal_colors.hover_bg,
+                    pressed_bg: normal_colors.pressed_bg,
+                    normal_border: normal_colors.normal_border,
+                    hover_border: normal_colors.hover_border,
+                    pressed_border: normal_colors.pressed_border,
+                },
+            ));
+
+            // Handle initial selected state
+            if is_selected {
+                entity_cmds.insert(Selected);
+            }
+
+            // Handle initial active state
+            if is_active {
+                entity_cmds.insert(Active);
+            }
+
+            // Handle button group membership
+            if let Some(group_entity) = button_group {
+                entity_cmds.insert(InButtonGroup(group_entity));
+
+                // Add this button to the group's members
+                let entity_to_add = button_entity;
+                cmds.entity(group_entity).entry::<ButtonGroupMembers>()
+                    .and_modify(move |mut members| {
+                        members.push(entity_to_add);
+                    });
+            }
         }
 
         button_entity
