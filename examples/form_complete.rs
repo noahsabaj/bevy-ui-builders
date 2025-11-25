@@ -3,8 +3,9 @@
 //! Run with: cargo run --example form_complete --features form
 
 use bevy::prelude::*;
+use bevy_ui_builders::prelude::*;
 use bevy_ui_builders::*;
-use bevy_ui_builders::form::{FieldType, ValidationRule, FormLayout};
+use bevy_ui_builders::components::form::FormLayout;
 
 fn main() {
     App::new()
@@ -18,29 +19,25 @@ fn setup(mut commands: Commands) {
     // Camera
     commands.spawn(Camera2d);
 
-    // Root container
+    // Root container - using UiContainer to prevent B0004 warnings
     commands
-        .spawn(Node {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            ..default()
-        })
+        .spawn(UiContainer::fullscreen())
         .with_children(|root| {
             // Wrap everything in a ScrollView
             ScrollViewBuilder::new()
                 .width(Val::Percent(100.0))
                 .height(Val::Percent(100.0))
-                .scrollbar_visibility(crate::scroll_view::ScrollbarVisibility::AutoHide { timeout_secs: 2.0 })
+                .scrollbar_visibility(bevy_ui_builders::components::scroll_view::ScrollbarVisibility::AutoHide { timeout_secs: 2.0 })
                 .build_with_children(root, |scroll_content| {
                     // Forms container
-                    scroll_content.spawn(Node {
-                        padding: UiRect::all(Val::Px(40.0)),
-                        flex_direction: FlexDirection::Row,
-                        justify_content: JustifyContent::SpaceEvenly,
-                        align_items: AlignItems::Start,
-                        column_gap: Val::Px(40.0),
-                        ..default()
-                    }).with_children(|parent| {
+                    scroll_content.spawn((
+                        UiContainer::row()
+                            .padding_all(Val::Px(40.0))
+                            .justify(JustifyContent::SpaceEvenly)
+                            .align(AlignItems::Start)
+                            .gap(Val::Px(40.0))
+                            .build(),
+                    )).with_children(|parent| {
                         // Login Form
                         create_login_form(parent);
 
@@ -56,10 +53,7 @@ fn setup(mut commands: Commands) {
 
 fn create_login_form(parent: &mut ChildSpawnerCommands) {
     parent
-        .spawn(Node {
-            flex_direction: FlexDirection::Column,
-            ..default()
-        })
+        .spawn(UiContainer::column().build())
         .with_children(|container| {
             // Title
             container.spawn((
@@ -90,10 +84,7 @@ fn create_login_form(parent: &mut ChildSpawnerCommands) {
 
 fn create_registration_form(parent: &mut ChildSpawnerCommands) {
     parent
-        .spawn(Node {
-            flex_direction: FlexDirection::Column,
-            ..default()
-        })
+        .spawn(UiContainer::column().build())
         .with_children(|container| {
             // Title
             container.spawn((
@@ -140,10 +131,7 @@ fn create_registration_form(parent: &mut ChildSpawnerCommands) {
 
 fn create_settings_form(parent: &mut ChildSpawnerCommands) {
     parent
-        .spawn(Node {
-            flex_direction: FlexDirection::Column,
-            ..default()
-        })
+        .spawn(UiContainer::column().build())
         .with_children(|container| {
             // Title
             container.spawn((

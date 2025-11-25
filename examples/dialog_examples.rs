@@ -4,7 +4,7 @@
 
 use bevy::prelude::*;
 use bevy_ui_builders::*;
-use bevy_ui_builders::dialog::presets;
+use bevy_ui_builders::components::dialog::presets;
 
 fn main() {
     App::new()

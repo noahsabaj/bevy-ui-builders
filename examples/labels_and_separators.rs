@@ -3,9 +3,8 @@
 //! Run with: cargo run --example labels_and_separators --features "label separator"
 
 use bevy::prelude::*;
+use bevy_ui_builders::prelude::*;
 use bevy_ui_builders::*;
-use bevy_ui_builders::label::LabelStyle;
-use bevy_ui_builders::separator::{SeparatorStyle, Orientation};
 
 fn main() {
     App::new()
@@ -54,56 +53,57 @@ fn create_labels_section(parent: &mut ChildSpawnerCommands) {
         })
         .with_children(|column| {
             // Section title
-            LabelBuilder::new("Label Styles")
-                .style(LabelStyle::Title)
+            LabelBuilder::new("Label Sizes & Variants")
+                .size(LabelSize::Title)
                 .margin(UiRect::bottom(Val::Px(20.0)))
                 .build(column);
 
-            // All label styles
-            LabelBuilder::new("Title Style - Large prominent text")
-                .style(LabelStyle::Title)
+            // Size variants
+            LabelBuilder::new("Title Size - Large prominent text")
+                .size(LabelSize::Title)
                 .build(column);
 
-            LabelBuilder::new("Heading Style - Section headers")
-                .style(LabelStyle::Heading)
+            LabelBuilder::new("Heading Size - Section headers")
+                .size(LabelSize::Heading)
                 .build(column);
 
-            LabelBuilder::new("Body Style - Normal content text")
-                .style(LabelStyle::Body)
+            LabelBuilder::new("Body Size - Normal content text")
+                .size(LabelSize::Body)
                 .build(column);
 
-            LabelBuilder::new("Caption Style - Small descriptive text")
-                .style(LabelStyle::Caption)
+            LabelBuilder::new("Caption Size - Small descriptive text")
+                .size(LabelSize::Caption)
                 .build(column);
 
-            LabelBuilder::new("Muted Style - De-emphasized text")
-                .style(LabelStyle::Muted)
+            LabelBuilder::new("Small Size - De-emphasized text")
+                .size(LabelSize::Small)
                 .build(column);
 
             separator().margin(UiRect::vertical(Val::Px(10.0))).build(column);
 
-            LabelBuilder::new("Error Style - Error messages")
-                .style(LabelStyle::Error)
+            // Semantic variants (colors)
+            LabelBuilder::new("Danger Variant - Error messages")
+                .variant(SemanticVariant::Danger)
                 .build(column);
 
-            LabelBuilder::new("Success Style - Success messages")
-                .style(LabelStyle::Success)
+            LabelBuilder::new("Success Variant - Success messages")
+                .variant(SemanticVariant::Success)
                 .build(column);
 
-            LabelBuilder::new("Warning Style - Warning messages")
-                .style(LabelStyle::Warning)
+            LabelBuilder::new("Warning Variant - Warning messages")
+                .variant(SemanticVariant::Warning)
                 .build(column);
 
             separator().margin(UiRect::vertical(Val::Px(10.0))).build(column);
 
             // Custom styled labels
             label("Custom Color Label")
-                .color(Color::srgb(0.5, 0.7, 1.0))
+                .text_color(Color::srgb(0.5, 0.7, 1.0))
                 .font_size(18.0)
                 .build(column);
 
             label("Custom Margin Label")
-                .style(LabelStyle::Body)
+                .size(LabelSize::Body)
                 .margin(UiRect::left(Val::Px(30.0)))
                 .build(column);
         });
@@ -120,7 +120,7 @@ fn create_separators_section(parent: &mut ChildSpawnerCommands) {
         .with_children(|column| {
             // Section title
             label("Separator Styles")
-                .style(LabelStyle::Title)
+                .size(LabelSize::Title)
                 .margin(UiRect::bottom(Val::Px(20.0)))
                 .build(column);
 
@@ -140,17 +140,17 @@ fn create_separators_section(parent: &mut ChildSpawnerCommands) {
             create_separator_demo(column, "Thin", SeparatorStyle::Thin);
 
             // Invisible separator (spacing only)
-            label("Invisible (Above)").style(LabelStyle::Caption).build(column);
+            label("Invisible (Above)").size(LabelSize::Caption).build(column);
 
             SeparatorBuilder::new()
                 .style(SeparatorStyle::Invisible)
                 .margin(UiRect::vertical(Val::Px(20.0)))
                 .build(column);
 
-            label("Invisible (Below)").style(LabelStyle::Caption).build(column);
+            label("Invisible (Below)").size(LabelSize::Caption).build(column);
 
             // Custom margins
-            label("Custom Margins").style(LabelStyle::Body).build(column);
+            label("Custom Margins").size(LabelSize::Body).build(column);
 
             SeparatorBuilder::new()
                 .style(SeparatorStyle::Solid)
@@ -194,7 +194,7 @@ fn create_separator_demo(parent: &mut ChildSpawnerCommands, name: &str, style: S
             ..default()
         })
         .with_children(|section| {
-            label(name).style(LabelStyle::Caption).build(section);
+            label(name).size(LabelSize::Caption).build(section);
 
             SeparatorBuilder::new()
                 .style(style)

@@ -4,6 +4,7 @@
 
 use bevy::prelude::*;
 use bevy_ui_builders::*;
+use bevy_ui_builders::traits::InteractiveBuilder;
 
 fn main() {
     App::new()
@@ -152,7 +153,7 @@ fn setup(mut commands: Commands) {
                             .build(row);
                     });
 
-                // Row 2: Custom width and hover effects
+                // Row 2: Custom width and animation presets
                 section
                     .spawn(Node {
                         flex_direction: FlexDirection::Row,
@@ -165,14 +166,16 @@ fn setup(mut commands: Commands) {
                             .width(Val::Px(200.0))
                             .build(row);
 
-                        ButtonBuilder::new("Hover Scale")
+                        // Animation is now automatic via AnimationCategory
+                        // Use .animation() for custom presets or .no_animation() to disable
+                        ButtonBuilder::new("Punchy Anim")
                             .style(ButtonStyle::Secondary)
-                            .hover_scale(1.1)
+                            .animation(AnimationPreset::Punchy)
                             .build(row);
 
-                        ButtonBuilder::new("Hover Bright")
+                        ButtonBuilder::new("No Animation")
                             .style(ButtonStyle::Warning)
-                            .hover_brightness(1.2)
+                            .no_animation()
                             .build(row);
                     });
             });

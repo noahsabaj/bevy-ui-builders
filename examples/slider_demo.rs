@@ -4,7 +4,6 @@
 
 use bevy::prelude::*;
 use bevy_ui_builders::*;
-use bevy_ui_builders::slider::{Slider, SliderHandle, ValueFormat};
 
 fn main() {
     App::new()
@@ -36,7 +35,7 @@ fn setup(mut commands: Commands) {
                 .width(Val::Percent(100.0))
                 .padding(UiRect::all(Val::Px(20.0)))
                 .gap(Val::Px(40.0))
-                .scrollbar_visibility(crate::scroll_view::ScrollbarVisibility::Always) // Always show for testing
+                .scrollbar_visibility(bevy_ui_builders::components::scroll_view::ScrollbarVisibility::Always) // Always show for testing
                 .build_with_children(parent, |scroll| {
                     // Title
                     scroll.spawn((

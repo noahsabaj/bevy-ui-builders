@@ -3,8 +3,8 @@
 //! Run with: cargo run --example panel_layouts --features panel
 
 use bevy::prelude::*;
+use bevy_ui_builders::prelude::*;
 use bevy_ui_builders::*;
-use bevy_ui_builders::panel::PanelStyle;
 
 fn main() {
     App::new()
@@ -59,11 +59,11 @@ fn setup(mut commands: Commands) {
                         .padding(UiRect::all(Val::Px(15.0)))
                         .build_with_children(grid, |panel| {
                             label("Default Panel")
-                                .style(LabelStyle::Heading)
+                                .size(LabelSize::Heading)
                                 .build(panel);
 
                             label("Standard panel with default background")
-                                .style(LabelStyle::Body)
+                                .size(LabelSize::Body)
                                 .build(panel);
                         });
 
@@ -74,7 +74,7 @@ fn setup(mut commands: Commands) {
                         .padding(UiRect::all(Val::Px(20.0)))
                         .build_with_children(grid, |panel| {
                             label("Card-style panel with subtle styling")
-                                .style(LabelStyle::Body)
+                                .size(LabelSize::Body)
                                 .build(panel);
                         });
 
@@ -84,11 +84,11 @@ fn setup(mut commands: Commands) {
                         .padding(UiRect::all(Val::Px(15.0)))
                         .build_with_children(grid, |panel| {
                             label("Elevated Panel")
-                                .style(LabelStyle::Heading)
+                                .size(LabelSize::Heading)
                                 .build(panel);
 
                             label("Appears raised with shadow effect")
-                                .style(LabelStyle::Caption)
+                                .size(LabelSize::Caption)
                                 .build(panel);
                         });
 
@@ -98,11 +98,11 @@ fn setup(mut commands: Commands) {
                         .padding(UiRect::all(Val::Px(15.0)))
                         .build_with_children(grid, |panel| {
                             label("Dark Panel")
-                                .style(LabelStyle::Heading)
+                                .size(LabelSize::Heading)
                                 .build(panel);
 
                             label("Dark background theme")
-                                .style(LabelStyle::Muted)
+                                .size(LabelSize::Small)
                                 .build(panel);
                         });
 
@@ -112,13 +112,13 @@ fn setup(mut commands: Commands) {
                         .padding(UiRect::all(Val::Px(15.0)))
                         .build_with_children(grid, |panel| {
                             label("Light Panel")
-                                .style(LabelStyle::Heading)
-                                .color(Color::BLACK)
+                                .size(LabelSize::Heading)
+                                .text_color(Color::BLACK)
                                 .build(panel);
 
                             label("Light background theme")
-                                .style(LabelStyle::Body)
-                                .color(Color::srgb(0.2, 0.2, 0.2))
+                                .size(LabelSize::Body)
+                                .text_color(Color::srgb(0.2, 0.2, 0.2))
                                 .build(panel);
                         });
 
@@ -128,11 +128,11 @@ fn setup(mut commands: Commands) {
                         .padding(UiRect::all(Val::Px(15.0)))
                         .build_with_children(grid, |panel| {
                             label("Bordered Panel")
-                                .style(LabelStyle::Heading)
+                                .size(LabelSize::Heading)
                                 .build(panel);
 
                             label("Panel with visible border")
-                                .style(LabelStyle::Body)
+                                .size(LabelSize::Body)
                                 .build(panel);
                         });
                 });
@@ -151,7 +151,7 @@ fn setup(mut commands: Commands) {
                         .width(Val::Percent(100.0))
                         .build_with_children(container, |outer_panel| {
                             label("This is the outer panel")
-                                .style(LabelStyle::Body)
+                                .size(LabelSize::Body)
                                 .margin(UiRect::bottom(Val::Px(15.0)))
                                 .build(outer_panel);
 
@@ -161,7 +161,7 @@ fn setup(mut commands: Commands) {
                                 .padding(UiRect::all(Val::Px(15.0)))
                                 .build_with_children(outer_panel, |inner| {
                                     label("Nested Dark Panel")
-                                        .style(LabelStyle::Caption)
+                                        .size(LabelSize::Caption)
                                         .build(inner);
 
                                     primary_button("Button in Nested Panel")
@@ -175,7 +175,7 @@ fn setup(mut commands: Commands) {
                                 .padding(UiRect::all(Val::Px(10.0)))
                                 .build_with_children(outer_panel, |inner| {
                                     label("Transparent nested panel - no background")
-                                        .style(LabelStyle::Muted)
+                                        .size(LabelSize::Small)
                                         .build(inner);
                                 });
                         });

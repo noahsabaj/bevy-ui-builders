@@ -15,9 +15,7 @@
 
 use bevy::prelude::*;
 use bevy_ui_builders::*;
-use bevy_ui_builders::text_input::{InputFilter, FocusGroupId, InputTransform};
-use bevy_ui_builders::scroll_view::{ScrollViewBuilder, ScrollDirection};
-use bevy_ui_builders::dimensions::*;
+use bevy_ui_builders::traits::UiBuilder;
 
 fn main() {
     App::new()
@@ -29,19 +27,19 @@ fn main() {
 }
 
 // Custom marker components for inputs
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct UsernameInput;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct EmailInput;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct PasswordInput;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct PhoneInput;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct NotesInput;
 
 fn setup(mut commands: Commands) {
@@ -122,7 +120,7 @@ fn setup(mut commands: Commands) {
                             create_input_section(container, "Password Field", |section| {
                                 TextInputBuilder::new()
                                     .with_placeholder("Enter password...")
-                                    .with_marker(PasswordInput)
+                                    .insert(PasswordInput)
                                     .build(section);
                                 // Note: mask_char would be set in TextInputVisual
                             });
@@ -224,7 +222,7 @@ fn setup(mut commands: Commands) {
                                     .alphanumeric_only()
                                     .with_max_length(20)
                                     .with_transform(InputTransform::Lowercase)
-                                    .with_marker(UsernameInput)
+                                    .insert(UsernameInput)
                                     .build(section);
                             });
 
@@ -232,8 +230,8 @@ fn setup(mut commands: Commands) {
                             create_input_section(container, "Email Address", |section| {
                                 TextInputBuilder::new()
                                     .with_placeholder("user@example.com")
-                                    .with_marker(EmailInput)
-                                    .and_marker(RequiredField)
+                                    .insert(EmailInput)
+                                    .insert(RequiredField)
                                     .build(section);
                             });
 
@@ -244,7 +242,7 @@ fn setup(mut commands: Commands) {
                                     .with_filter(InputFilter::Custom(|s| {
                                         s.chars().all(|c| c.is_numeric() || c == '-' || c == ' ')
                                     }))
-                                    .with_marker(PhoneInput)
+                                    .insert(PhoneInput)
                                     .build(section);
                             });
 
@@ -420,13 +418,13 @@ where
 }
 
 // Marker component for required fields
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct RequiredField;
 
 // System to log text changes for demonstration
 fn log_text_changes(
-    username_query: Query<&bevy_ui_builders::text_input::native_input::TextBuffer, (With<UsernameInput>, Changed<bevy_ui_builders::text_input::native_input::TextBuffer>)>,
-    email_query: Query<&bevy_ui_builders::text_input::native_input::TextBuffer, (With<EmailInput>, Changed<bevy_ui_builders::text_input::native_input::TextBuffer>)>,
+    username_query: Query<&bevy_ui_builders::components::text_input::native_input::TextBuffer, (With<UsernameInput>, Changed<bevy_ui_builders::components::text_input::native_input::TextBuffer>)>,
+    email_query: Query<&bevy_ui_builders::components::text_input::native_input::TextBuffer, (With<EmailInput>, Changed<bevy_ui_builders::components::text_input::native_input::TextBuffer>)>,
 ) {
     for buffer in &username_query {
         info!("Username changed: {}", buffer.content);

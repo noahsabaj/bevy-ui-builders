@@ -7,9 +7,8 @@
 
 use bevy::prelude::*;
 use bevy_ui_builders::prelude::*;
-use bevy_ui_builders::button::{SelectionChanged, Selected};
-use bevy_ui_builders::relationships::ButtonGroupMembers;
-use bevy_ui_builders::UiBuilderPlugin;
+use bevy_ui_builders::*;
+use bevy_ui_builders::components::button::{SelectionChanged, Selected};
 
 fn main() {
     App::new()
@@ -40,10 +39,14 @@ struct SelectionCounter;
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
 
-    // Root container
+    // Create button group entity at world level (before any UI hierarchy)
+    // This ensures it has no parent, avoiding B0004 warnings about missing GlobalTransform
+    let radio_group = commands.spawn(ButtonGroupMembers::default()).id();
+
+    // Root container - using UiContainer to prevent B0004 warnings
     commands
         .spawn((
-            Node {
+            UiContainer::new(Node {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 justify_content: JustifyContent::Center,
@@ -51,7 +54,7 @@ fn setup(mut commands: Commands) {
                 flex_direction: FlexDirection::Column,
                 row_gap: Val::Px(40.0),
                 ..default()
-            },
+            }),
             BackgroundColor(Color::srgb(0.1, 0.1, 0.12)),
         ))
         .with_children(|parent| {
@@ -89,24 +92,21 @@ fn setup(mut commands: Commands) {
             });
 
             // Section 2: Radio Button Group (Exclusive Selection)
+            // Note: radio_group was created at world level above to avoid B0004 warnings
             section_container(parent, "Radio Button Group (Exclusive Selection)", |section| {
-                // Create the button group entity with ButtonGroupMembers component
-                // The relationship system will populate it when buttons with InButtonGroup are added
-                let group = section.commands().spawn(ButtonGroupMembers::default()).id();
-
                 ButtonBuilder::new("Option 1")
-                    .in_group(group)
+                    .in_group(radio_group)
                     .selected(true)
                     .style(ButtonStyle::Primary)
                     .build(section);
 
                 ButtonBuilder::new("Option 2")
-                    .in_group(group)
+                    .in_group(radio_group)
                     .style(ButtonStyle::Primary)
                     .build(section);
 
                 ButtonBuilder::new("Option 3")
-                    .in_group(group)
+                    .in_group(radio_group)
                     .style(ButtonStyle::Primary)
                     .build(section);
             });
@@ -231,6 +231,7 @@ fn setup(mut commands: Commands) {
 }
 
 /// Helper function to create a section container
+/// Uses UiContainer to prevent B0004 warnings about missing GlobalTransform.
 fn section_container(
     parent: &mut ChildSpawnerCommands,
     title: &str,
@@ -238,14 +239,14 @@ fn section_container(
 ) {
     parent
         .spawn((
-            Node {
+            UiContainer::new(Node {
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
                 row_gap: Val::Px(12.0),
                 padding: UiRect::all(Val::Px(20.0)),
                 border: UiRect::all(Val::Px(1.0)),
                 ..default()
-            },
+            }),
             BackgroundColor(Color::srgba(0.15, 0.15, 0.17, 0.8)),
             BorderColor::all(Color::srgb(0.3, 0.3, 0.35)),
             BorderRadius::all(Val::Px(8.0)),
@@ -265,14 +266,12 @@ fn section_container(
                 },
             ));
 
-            // Button container
+            // Button container - using UiContainer for proper hierarchy
             section_parent
                 .spawn((
-                    Node {
-                        flex_direction: FlexDirection::Row,
-                        column_gap: Val::Px(12.0),
-                        ..default()
-                    },
+                    UiContainer::row()
+                        .gap(Val::Px(12.0))
+                        .build(),
                     BackgroundColor(Color::NONE),
                 ))
                 .with_children(|button_container| {

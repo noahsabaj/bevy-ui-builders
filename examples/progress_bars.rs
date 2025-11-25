@@ -4,7 +4,6 @@
 
 use bevy::prelude::*;
 use bevy_ui_builders::*;
-use bevy_ui_builders::progress::{ProgressBar, ProgressBarStyle};
 
 fn main() {
     App::new()

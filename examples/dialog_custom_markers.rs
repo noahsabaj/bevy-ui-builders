@@ -2,7 +2,7 @@
 
 use bevy::prelude::*;
 use bevy_ui_builders::prelude::*;
-use bevy_ui_builders::{DialogButtonMarker, DialogOverlay, UiBuilderPlugin};
+use bevy_ui_builders::*;
 
 // Custom marker components for your game logic
 #[derive(Component)]
