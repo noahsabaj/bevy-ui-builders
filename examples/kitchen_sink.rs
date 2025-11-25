@@ -3,13 +3,8 @@
 //! Run with: cargo run --example kitchen_sink --features all_builders
 
 use bevy::prelude::*;
+use bevy_ui_builders::prelude::*;
 use bevy_ui_builders::*;
-use bevy_ui_builders::panel::PanelStyle;
-use bevy_ui_builders::label::LabelStyle;
-use bevy_ui_builders::separator::{SeparatorStyle, Orientation};
-use bevy_ui_builders::progress::ProgressBar;
-use bevy_ui_builders::slider::{Slider, SliderBuilder, ValueFormat};
-use bevy_ui_builders::dialog::presets;
 
 fn main() {
     App::new()
@@ -76,7 +71,7 @@ fn create_header(parent: &mut ChildSpawnerCommands) {
                 .with_children(|row| {
                     // Logo/Title
                     label("Kitchen Sink Demo")
-                        .style(LabelStyle::Title)
+                        .size(LabelSize::Title)
                         .font_size(24.0)
                         .build(row);
 
@@ -108,7 +103,7 @@ fn create_sidebar(parent: &mut ChildSpawnerCommands) {
         .padding(UiRect::all(Val::Px(15.0)))
         .build_with_children(parent, |sidebar| {
             label("Navigation")
-                .style(LabelStyle::Heading)
+                .size(LabelSize::Heading)
                 .margin(UiRect::bottom(Val::Px(15.0)))
                 .build(sidebar);
 
@@ -150,7 +145,7 @@ fn create_sidebar(parent: &mut ChildSpawnerCommands) {
                 })
                 .with_children(|progress_section| {
                     label("Storage Used")
-                        .style(LabelStyle::Caption)
+                        .size(LabelSize::Caption)
                         .build(progress_section);
 
                     ProgressBarBuilder::new(0.0)
@@ -167,7 +162,7 @@ fn create_main_panel(parent: &mut ChildSpawnerCommands) {
         .padding(UiRect::all(Val::Px(30.0)))
         .build_with_children(parent, |main| {
             label("Welcome to Kitchen Sink")
-                .style(LabelStyle::Title)
+                .size(LabelSize::Title)
                 .margin(UiRect::bottom(Val::Px(20.0)))
                 .build(main);
 
@@ -177,7 +172,7 @@ fn create_main_panel(parent: &mut ChildSpawnerCommands) {
                 .build(main);
 
             label("This demo showcases all UI builders in one application")
-                .style(LabelStyle::Body)
+                .size(LabelSize::Body)
                 .margin(UiRect::bottom(Val::Px(15.0)))
                 .build(main);
 
@@ -188,7 +183,7 @@ fn create_main_panel(parent: &mut ChildSpawnerCommands) {
                 .padding(UiRect::all(Val::Px(20.0)))
                 .build_with_children(main, |settings| {
                     // Volume slider
-                    label("Volume").style(LabelStyle::Body).build(settings);
+                    label("Volume").size(LabelSize::Body).build(settings);
                     SliderBuilder::new(0.0..100.0)
                         .value(75.0)
                         .with_preview(true)
@@ -201,7 +196,7 @@ fn create_main_panel(parent: &mut ChildSpawnerCommands) {
                         .build(settings);
 
                     // Brightness slider
-                    label("Brightness").style(LabelStyle::Body).build(settings);
+                    label("Brightness").size(LabelSize::Body).build(settings);
                     SliderBuilder::new(0.0..100.0)
                         .value(80.0)
                         .with_preview(true)
@@ -239,7 +234,7 @@ fn create_right_panel(parent: &mut ChildSpawnerCommands) {
         .padding(UiRect::all(Val::Px(15.0)))
         .build_with_children(parent, |panel| {
             label("Status")
-                .style(LabelStyle::Heading)
+                .size(LabelSize::Heading)
                 .margin(UiRect::bottom(Val::Px(15.0)))
                 .build(panel);
 
@@ -254,10 +249,10 @@ fn create_right_panel(parent: &mut ChildSpawnerCommands) {
                     ..default()
                 })
                 .with_children(|status| {
-                    create_status_item(status, "Connection", "Online", LabelStyle::Success);
-                    create_status_item(status, "Updates", "3 Available", LabelStyle::Warning);
-                    create_status_item(status, "Memory", "4.2 GB", LabelStyle::Body);
-                    create_status_item(status, "CPU", "45%", LabelStyle::Body);
+                    create_status_item(status, "Connection", "Online", Some(SemanticVariant::Success));
+                    create_status_item(status, "Updates", "3 Available", Some(SemanticVariant::Warning));
+                    create_status_item(status, "Memory", "4.2 GB", None);
+                    create_status_item(status, "CPU", "45%", None);
                 });
 
             // Notification section
@@ -270,7 +265,7 @@ fn create_right_panel(parent: &mut ChildSpawnerCommands) {
                 })
                 .with_children(|notifications| {
                     label("Recent Activity")
-                        .style(LabelStyle::Caption)
+                        .size(LabelSize::Caption)
                         .build(notifications);
 
                     PanelBuilder::new()
@@ -278,7 +273,7 @@ fn create_right_panel(parent: &mut ChildSpawnerCommands) {
                         .padding(UiRect::all(Val::Px(10.0)))
                         .build_with_children(notifications, |notif| {
                             label("File uploaded successfully")
-                                .style(LabelStyle::Caption)
+                                .size(LabelSize::Caption)
                                 .build(notif);
                         });
 
@@ -287,7 +282,7 @@ fn create_right_panel(parent: &mut ChildSpawnerCommands) {
                         .padding(UiRect::all(Val::Px(10.0)))
                         .build_with_children(notifications, |notif| {
                             label("Settings saved")
-                                .style(LabelStyle::Caption)
+                                .size(LabelSize::Caption)
                                 .build(notif);
                         });
                 });
@@ -310,12 +305,12 @@ fn create_footer(parent: &mut ChildSpawnerCommands) {
                 })
                 .with_children(|row| {
                     label("2025 Bevy UI Builders")
-                        .style(LabelStyle::Muted)
+                        .size(LabelSize::Small)
                         .font_size(12.0)
                         .build(row);
 
-                    label("Version 0.1.0")
-                        .style(LabelStyle::Muted)
+                    label("Version 0.2.1")
+                        .size(LabelSize::Small)
                         .font_size(12.0)
                         .build(row);
                 });
@@ -326,7 +321,7 @@ fn create_status_item(
     parent: &mut ChildSpawnerCommands,
     label_text: &str,
     value: &str,
-    value_style: LabelStyle,
+    value_variant: Option<SemanticVariant>,
 ) {
     parent
         .spawn(Node {
@@ -336,12 +331,14 @@ fn create_status_item(
         })
         .with_children(|row| {
             label(label_text)
-                .style(LabelStyle::Muted)
+                .size(LabelSize::Small)
                 .build(row);
 
-            label(value)
-                .style(value_style)
-                .build(row);
+            let mut value_label = label(value).size(LabelSize::Body);
+            if let Some(variant) = value_variant {
+                value_label = value_label.variant(variant);
+            }
+            value_label.build(row);
         });
 }
 
