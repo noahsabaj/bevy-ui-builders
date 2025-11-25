@@ -227,7 +227,7 @@ fn spawn_menu_item(
 
                     // Arrow indicator
                     row.spawn((
-                        Text::new("▶"),
+                        Text::new(">"),
                         TextFont {
                             font_size: dimensions::FONT_SIZE_SMALL,
                             ..default()
@@ -264,7 +264,7 @@ fn spawn_menu_item(
                 .with_children(|row| {
                     // Checkbox indicator
                     row.spawn((
-                        Text::new(if *checked { "✓" } else { " " }),
+                        Text::new(if *checked { "*" } else { " " }),
                         TextFont {
                             font_size: dimensions::FONT_SIZE_SMALL,
                             ..default()

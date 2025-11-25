@@ -184,7 +184,7 @@ pub fn spawn_toasts(
                             ))
                             .with_children(|btn| {
                                 btn.spawn((
-                                    Text::new("✕"),
+                                    Text::new("x"),
                                     TextFont {
                                         font_size: dimensions::FONT_SIZE_SMALL,
                                         ..default()

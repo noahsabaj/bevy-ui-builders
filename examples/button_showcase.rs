@@ -139,12 +139,12 @@ fn setup(mut commands: Commands) {
                     .with_children(|row| {
                         ButtonBuilder::new("Save")
                             .style(ButtonStyle::Success)
-                            .icon("💾")
+                            .icon("[S]")
                             .build(row);
 
                         ButtonBuilder::new("Settings")
                             .style(ButtonStyle::Secondary)
-                            .icon("⚙️")
+                            .icon("[*]")
                             .build(row);
 
                         ButtonBuilder::new("Disabled")
@@ -198,15 +198,15 @@ fn setup(mut commands: Commands) {
                         ..default()
                     })
                     .with_children(|row| {
-                        primary_button("▶️ Play")
+                        primary_button("> Play")
                             .size(ButtonSize::Large)
                             .build(row);
 
-                        secondary_button("⏸ Pause")
+                        secondary_button("|| Pause")
                             .size(ButtonSize::Large)
                             .build(row);
 
-                        danger_button("⏹ Stop")
+                        danger_button("[] Stop")
                             .size(ButtonSize::Large)
                             .build(row);
                     });

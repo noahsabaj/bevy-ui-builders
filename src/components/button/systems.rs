@@ -153,13 +153,13 @@ pub fn enforce_exclusive_button_groups(
         // Get all members of this button's group
         if let Ok(members) = group_query.get(in_group.0) {
             let member_count = members.iter().count();
-            info!("🔘 Radio button {:?} clicked in group {:?} with {} members",
+            info!("[Radio] Button {:?} clicked in group {:?} with {} members",
                   clicked_entity, in_group.0, member_count);
 
             // Deselect all other buttons in the group
             for &member_entity in members.iter() {
                 if member_entity != clicked_entity {
-                    info!("  ❌ Deselecting button {:?}", member_entity);
+                    info!("  [-] Deselecting button {:?}", member_entity);
                     commands.entity(member_entity).remove::<Selected>();
                     events.write(SelectionChanged {
                         entity: member_entity,
@@ -169,7 +169,7 @@ pub fn enforce_exclusive_button_groups(
             }
 
             // Select the clicked button
-            info!("  ✅ Selecting button {:?}", clicked_entity);
+            info!("  [+] Selecting button {:?}", clicked_entity);
             commands.entity(clicked_entity).insert(Selected);
             events.write(SelectionChanged {
                 entity: clicked_entity,

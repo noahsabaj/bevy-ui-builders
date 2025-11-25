@@ -216,7 +216,7 @@ fn setup(mut commands: Commands) {
 
             // Instructions
             parent.spawn((
-                Text::new("Click buttons to toggle selection • Radio groups allow only one selection • Active state shows current page/tab"),
+                Text::new("Click buttons to toggle selection | Radio groups allow only one selection | Active state shows current page/tab"),
                 TextFont {
                     font_size: 14.0,
                     ..default()

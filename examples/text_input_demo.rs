@@ -111,7 +111,7 @@ fn setup(mut commands: Commands) {
                             // Input with value and clear button
                             create_input_section(container, "With Clear Button", |section| {
                                 TextInputBuilder::new()
-                                    .with_value("Click × to clear")
+                                    .with_value("Click x to clear")
                                     .with_clear_button()
                                     .build(section);
                             });

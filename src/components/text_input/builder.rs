@@ -340,7 +340,7 @@ impl UiBuilder for TextInputBuilder {
                     text_input_id = Some(entity_commands.id());
 
                     // Add clear button
-                    let clear_button = ButtonBuilder::new("×")
+                    let clear_button = ButtonBuilder::new("x")
                         .style(ButtonStyle::Ghost)
                         .size(ButtonSize::Small)
                         .build(container);
