@@ -1,6 +1,6 @@
 [package]
 name = "bevy-ui-builders"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["Noah Sabaj <noahsabaj@gmail.com>"]
 description = "Declarative UI builders for Bevy with consistent styling and interaction handling"
@@ -22,13 +22,21 @@ bevy = { version = "0.17", default-features = false, features = [
     "bevy_log",
     "default_font"
 ] }
-arboard = "3.4"
+
+# Clipboard support (optional, not available on WASM)
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+arboard = { version = "3.4", optional = true }
 
 [dev-dependencies]
 bevy = "0.17"
 
 [features]
-default = ["all_builders"]
+default = ["all_builders", "clipboard"]
+
+# Native clipboard support (Ctrl+C/V/X in text inputs)
+# Automatically disabled on WASM targets via target-specific dependency
+clipboard = ["dep:arboard"]
+
 all_builders = ["button", "slider", "dialog", "text_input", "panel", "form", "progress", "label", "separator", "checkbox", "number_input", "dropdown", "tooltip", "tabs", "toast", "context_menu"]
 button = []
 slider = []

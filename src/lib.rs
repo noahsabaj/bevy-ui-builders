@@ -14,8 +14,7 @@
 
 #![warn(missing_docs)]
 
-// Re-export Bevy UI prelude for convenience
-pub use bevy::prelude::*;
+use bevy::prelude::App;
 use bevy_plugin_builder::define_plugin;
 
 // Core modules
@@ -182,7 +181,13 @@ pub use game_ui::dialogue::{
 };
 
 /// Prelude module for convenient imports
+///
+/// Use `use bevy_ui_builders::prelude::*;` to import commonly used types.
+/// This also re-exports `bevy::prelude::*` for convenience.
 pub mod prelude {
+    // Re-export Bevy's prelude for convenience
+    pub use bevy::prelude::*;
+
     #[doc(hidden)]
     pub use crate::{
         despawn_ui_entities, despawn_entities,
