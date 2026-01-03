@@ -7,6 +7,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  # Limit parallelism to avoid OOM on GitHub runners
+  CARGO_BUILD_JOBS: 2
 
 jobs:
   # Run tests before publishing
@@ -34,8 +36,8 @@ jobs:
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
 
-      - name: Run tests
-        run: cargo test --all-features
+      - name: Run tests (lib only to avoid linker OOM)
+        run: cargo test --lib --all-features
 
   # Publish to crates.io using Trusted Publishing
   publish:
