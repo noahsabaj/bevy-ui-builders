@@ -1,3 +1,6 @@
+# Archived, Bevy 0.19 is introducing BSN (B-Scene) which is way better than this could ever be. Plus it's idiomatic. Thanks to the Bevy team and its contributors! [https://github.com/bevyengine/bevy/pull/20158](https://github.com/bevyengine/bevy/pull/20158)
+Feel free to clone this or fork it and/or do whatever you wish with it. Have fun!
+
 # Bevy UI Builders
 
 [![Crates.io](https://img.shields.io/crates/v/bevy-ui-builders)](https://crates.io/crates/bevy-ui-builders)
